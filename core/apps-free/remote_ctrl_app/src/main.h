@@ -43,7 +43,7 @@ typedef struct rp_osc_meas_res_s {
 
 /* Parameters indexes - these defines should be in the same order as 
  * rp_app_params_t structure defined in main.c */
-#define PARAMS_NUM        64
+#define PARAMS_NUM        33
 #define MIN_GUI_PARAM     0
 #define MAX_GUI_PARAM     1
 #define TRIG_MODE_PARAM   2
@@ -77,49 +77,12 @@ typedef struct rp_osc_meas_res_s {
 #define GAIN_CH2          30
 #define GUI_RST_Y_RANGE   31
 #define PREPARE_WAVE      32
-#define GEN_DC_OFFS_1     33
-#define GEN_DC_OFFS_2     34
-/*lcr parameters */
-#define START_MEASURE     35
-#define GEN_AMP           36
-#define GEN_AVG           37
-#define GEN_DC_BIAS       38
-#define GEN_R_SHUNT       39
-#define LCR_STEPS         40
-#define START_FREQ        41
-#define END_FREQ          42
-#define PLOT_Y_SCALE_DATA 43
-#define LCR_SCALE_TYPE    44
-#define GEN_FS_LOADRE     45
-#define GEN_FS_LOADIM     46
-#define LCR_CALIBRATION   47
-#define LCR_PROGRESS      48
-#define LCR_SAVE_DATA     49
-/* AWG parameters */
-#define GEN_TRIG_MODE_CH1 50
-#define GEN_SIG_TYPE_CH1  51
-#define GEN_ENABLE_CH1    52
-#define GEN_SINGLE_CH1    53
-#define GEN_SIG_AMP_CH1   54
-#define GEN_SIG_FREQ_CH1  55
-#define GEN_SIG_DCOFF_CH1 56
-#define GEN_TRIG_MODE_CH2 57
-#define GEN_SIG_TYPE_CH2  58
-#define GEN_ENABLE_CH2    59
-#define GEN_SINGLE_CH2    60
-#define GEN_SIG_AMP_CH2   61
-#define GEN_SIG_FREQ_CH2  62
-#define GEN_SIG_DCOFF_CH2 63
-
-/* Defines from which parameters on are AWG parameters (used in set_param() to
- * trigger update only on needed part - either Oscilloscope or AWG */
-#define PARAMS_AWG_PARAMS 50
 
 /* Output signals */
 #define SIGNALS_NUM   3
 
 /* Measurment length - always 1024. Stripped in JS */
-//#define SIGNAL_LENGTH 1000
+#define SIGNAL_LENGTH 1024
 
 /* module entry points */
 int rp_app_init(void);
@@ -144,13 +107,5 @@ int rp_clean_params(rp_app_params_t *params);
  */
 int rp_update_main_params(rp_app_params_t *params);
 
-/* Waveform generator frequency limiter. */
-float rp_gen_limit_freq(float freq, float gen_type);
-
-/* LCR get parameters */
-float rp_get_params_lcr(int pos);
-
-/* LCR set parameters */
-void rp_set_params_lcr(int pos, float val);
 
 #endif /*  __MAIN_H */

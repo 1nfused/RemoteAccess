@@ -56,7 +56,7 @@ int rp_osc_prepare_time_vector(float **out_signal, int dec_factor,
  * TODO: Remove time vector generation from these functions, it should
  * be created at the beginning
  */
-int lcr_start_Measure(float **cha_signal, int *in_cha_signal,
+int send_data(float **cha_signal, int *in_cha_signal,
                     float **chb_signal, int *in_chb_signal,
                     float **time_signal);
 

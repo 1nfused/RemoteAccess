@@ -1,17 +1,22 @@
 CC=$(CROSS_COMPILE)gcc
 RM=rm
 
-OBJECTS=main.o fpga.o worker.o calib.o fpga_awg.o generate.o
+OBJECTS=main.o fpga.o worker.o calib.o
+
+INCLUDE=
 
 CFLAGS+= -Wall -Werror -g -fPIC $(INCLUDE)
 LDFLAGS=-shared
 
-CONTROLLER = ../controllerhf.so
 
-all: $(CONTROLLER)
+OUT_DIR=../
+C_OUT_NAME=$(OUT_DIR)controllerhf.so
 
-$(CONTROLLER): $(OBJECTS)
-	$(CC) -o $(CONTROLLER) $(OBJECTS) $(CFLAGS) $(LDFLAGS)
+all: make_c_app
+clean: clean_c_app
 
-clean:
-	-$(RM) -f $(OBJECTS)
+make_c_app: $(OBJECTS)
+	$(CC) -o $(C_OUT_NAME) $(OBJECTS) $(CFLAGS) $(LDFLAGS)
+
+clean_c_app:
+	$(RM) -f $(C_OUT_NAME) $(OBJECTS)

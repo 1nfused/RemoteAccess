@@ -20,8 +20,6 @@
 #include "version.h"
 #include "worker.h"
 #include "fpga.h"
-#include "calib.h"
-#include "generate.h"
 
 
 /* Describe app. parameters with some info/limitations */
@@ -78,7 +76,7 @@ static rp_app_params_t rp_main_params[PARAMS_NUM+1] = {
        * signal and changes the parameters to most fit the input:
        *    0 - normal operation
        *    1 - auto button pressed */
-        "auto_flag", 0, 1, 0, 0, 1 },
+        "auto_flag", 0, 1, 1, 0, 1 },
     { /* min_y, max_y - Controller defined Y range when using auto-set or after
        * gain change y range */
         "min_y", 0, 0, 0, -1000, +1000 },
@@ -137,141 +135,8 @@ static rp_app_params_t rp_main_params[PARAMS_NUM+1] = {
        *    1 - button for download presses - this flag is self-clearing when
        *        download is finished */
         "prepare_wave", 0, 0, 0, 0, 1 },
-    { /* gen_DC_offs_1 - DC offset for channel 1 expressed in [V] requested by 
-       * GUI */
-        "gen_DC_offs_1", 0, 1, 0, -100, 100 },
-    { /* gen_DC_offs_2 - DC offset for channel 2 expressed in [V] requested by 
-       * GUI */
-        "gen_DC_offs_2", 0, 1, 0, -100, 100 },
 
-  /*   LCR parameters 
-  *--------------------------------------------------------------------------------------------------------------------*/
-
-    { /* start_measure - General flag used for sending params from the RedPitaya browser.
-       *   -1 - Application not loaded yet
-       *    0 - negative
-       *    1 - positive 
-       *    2 - Other ( Change the max value for more states )
-       *  - Setting max value to 2 for general purposes. Can be changed accordingly. 
-       *  - Read only value set to 0, as the flag_button value can be changed from Javascript 
-       *    code in index.html as well as from the C controller code. */
-        "start_measure", -1, 1, 0, -1, 3 },
-    { /* LCR amplitude. User defined.
-       *    Min value - 0
-       *    Max value - 2 */
-        "gen_amp", 0, 1, 0, 0, 2 },
-
-    { /* Averaging parameter.
-       *    Min value - 0
-       *    Max value - 10 */
-        "gen_avg", 0, 1, 0, 0, 10 },
-
-    { /* DC bias parameter.
-       *    Min value - (-2)
-       *    Max value -   2 */
-        "gen_DC_bias", 0, 1, 0, -2, 2 },
-
-    { /* DC bias parameter.
-       *    Min value - (-2)
-       *    Max value -   2  */
-       "gen_R_shunt", 0, 1, 0, 0, 50000 },
-    { /* LCR steps declared by user
-       * Minimum value - 1
-       * Maximum value - 1000
-       * Default value - 100  */
-      "lcr_steps", 1000, 1, 0, 0, 1000},
-    { /* Start frequency for frequency sweep.
-       *    Min value - 200
-       *    Max value - 1000000    */
-       "start_freq", 200, 1, 0, 0, 100000 },
-
-    { /* End frequency for frequency sweep.
-       * Min value - 200
-       * Max value - 100000000 */
-       "end_freq", 200, 1, 0, 0, 100000000 },
-    { /* Plots different data depending on user choice
-       * 0 - Plots amplitude
-       * 1 - Plots phase
-       * 5 - TODO: Adding multiple data acquisition. */
-      "plot_y_scale_data", 0, 1, 0, 0, 15 },
-    { /* Lcr scale type. Defined by user.
-       * 0 - Linear scale
-       * 1 - Logarithmic scale */
-      "lcr_scale_type", 0 , 1, 0, 0, 1 },
-    { /* Lcr LoadRE
-       * */
-      "gen_fs_LoadRe", 0, 1, 0, 0, 1 },
-    
-    { /* Lcr LoadIm
-       * */
-      "gen_fs_LoadIm", 0, 1, 0, 0, 1 },
-    { /* Calibration type. Defined by user in browser.
-       * 0 - Open calibration
-       * 1 - Short alibration
-       * 2 - Load calibration
-       * 3 - None */
-       "lcr_calibration", 0, 1, 0, 0, 3 },
-    { /* Lcr progress status. Used for progress bar while measuring.
-       * 0 -   default/min val
-       * 100 - max val */
-       "lcr_progress", 0, 1, 0, 0, 100 },
-    {/* Lcr save/load data parameter 
-      * -1 - Do not save any parameter data
-      *  1 - Save parameter data */ 
-       "lcr_save_data", -1, 1, 0, -1, 3 },
-
-    /* Arbitrary Waveform Generator parameters from here on */
-
-    { /* gen_trig_mod_ch1 - Selects the trigger mode for channel 1:
-       *    0 - continuous
-       *    1 - single 
-       *    2 - external */
-        "gen_trig_mod_ch1", 0, 1, 0, 0, 2 },
-    { /* gen_sig_type_ch1 - Selects the type of signal for channel 1:
-       *    0 - sine
-       *    1 - square
-       *    2 - triangle
-       *    3 - from file */
-        "gen_sig_type_ch1", 0, 1, 0, 0, 3 },
-    { /* gen_enable_ch1 - Enables/disable signal generation on channel 1:
-       *    0 - Channel 1 disabled
-       *    1 - Channel 1 enabled */
-        "gen_enable_ch1", 0, 1, 0, 0, 1 },
-    { /* gen_single_ch1 - Fire single trigger on generator channel 1:
-       *    0 - Do not fire single trigger
-       *    1 - Fire single trigger */
-        "gen_single_ch1", 0, 1, 0, 0, 1 },
-    { /* gen_sig_amp_ch1 - Amplitude for Channel 1 in [Vpp] */
-        "gen_sig_amp_ch1", 0, 1, 0, 0, 2.0 },
-    { /* gen_sig_freq_ch1 - Frequency for Channel 1 in [Hz] */
-        "gen_sig_freq_ch1", 1000, 1, 0, 0, 50e6 },
-    { /* gen_sig_dcoff_ch1 - DC offset applied to the signal in [V] */
-        "gen_sig_dcoff_ch1", 0, 1, 0, -1, 1 },
-    { /* gen_trig_mod_ch2 - Selects the trigger mode for channel 2:
-       *    0 - continuous
-       *    1 - single 
-       *    2 - external */
-        "gen_trig_mod_ch2", 0, 1, 0, 0, 2 },
-    { /* gen_sig_type_ch2 - Selects the type of signal for channel 2:
-       *    0 - sine
-       *    1 - square
-       *    2 - triangle
-       *    3 - from file */
-        "gen_sig_type_ch2", 0, 1, 0, 0, 3 },
-    { /* gen_enable_ch2 - Enables/disable signal generation on channel 2:
-       *    0 - channel 2 disabled
-       *    1 - channel 2 enabled */
-        "gen_enable_ch2", 0, 1, 0, 0, 1 },
-    { /* gen_single_ch2 - Fire single trigger on generator channel 2:
-       *    0 - Do not fire single trigger
-       *    1 - Fire single trigger */
-        "gen_single_ch2", 0, 1, 0, 0, 1 },
-    { /* gen_sig_amp_ch2 - Amplitude for channel 2 in [Vpp] */
-        "gen_sig_amp_ch2", 0, 1, 0, 0, 2.0 },
-    { /* gen_sig_freq_ch2 - Frequency for channel 2 in [Hz] */
-        "gen_sig_freq_ch2", 1000, 1, 0, 0.2, 50e6 },
-    { /* gen_sig_dcoff_ch2 - DC offset applied to the signal in [V] */
-        "gen_sig_dcoff_ch2", 0, 1, 0, -1, 1 },
+    /* ------------------------------------ END OF APP PARAMS ------------------------------------------------*/
     
     { /* Must be last! */
         NULL, 0.0, -1, -1, 0.0, 0.0 }     
@@ -301,7 +166,6 @@ int rp_app_init(void)
     
     fprintf(stderr, "Loading scope version %s-%s.\n", VERSION_STR, REVISION_STR);
 
-
     rp_default_calib_params(&rp_main_calib_params);
     if(rp_read_calib_params(&rp_main_calib_params) < 0) {
         fprintf(stderr, "rp_read_calib_params() failed, using default"
@@ -311,9 +175,8 @@ int rp_app_init(void)
                           &rp_main_calib_params) < 0) {
         return -1;
     }
-    if(generate_init(&rp_main_calib_params) < 0) {
-        return -1;
-    }
+
+
 
     if(rp_main_params[GAIN_CH1].value == 0) {
         rp_main_ch1_max_adc_v = 
@@ -344,224 +207,10 @@ int rp_app_exit(void)
     fprintf(stderr, "Unloading scope version %s-%s.\n", VERSION_STR, REVISION_STR);
 
     rp_osc_worker_exit();
-    generate_exit();
 
     return 0;
 }
 
-int time_range_to_time_unit(int range)
-{
-    int unit = 2;
-    
-    switch (range) {
-    case 0:
-    case 1:
-        unit = 0;
-        break;
-    case 2:
-    case 3:
-        unit = 1;
-        break;
-    default:
-        unit = 2;
-    }
-
-    return unit;
-}
-
-/* Find a suitable FPGA decimation factor and trigger delay,
- * based on xmin & xmax zoom conntrols */
-int transform_acq_params(rp_app_params_t *p)
-{
-    int ret = 0;
-    int i;
-    
-    
-    
-
-    double xmin = p[MIN_GUI_PARAM].value;
-    double xmax = p[MAX_GUI_PARAM].value;
-
-    float ratio;
-   
-    int reset_zoom=0;
-    
-    int time_unit = p[TIME_UNIT_PARAM].value;
-    float t_unit_factor = pow(10, 3*(2 - time_unit));
-
-    
-    // When exactly this pair provided by client Reset Zoom is requested
-    if ((xmax==1.0e6) && (xmin==-1.0e6))
-      reset_zoom=1;
-    
-    TRACE("tu = %d, tf = %10.8f\n", time_unit, t_unit_factor);
-
-    // Retrieve Server ForceX state    
-    p[FORCEX_FLAG_PARAM].value  = (float) forcex_state;
-    
-    // Difference (expressed as ratio) between forced values and GUI state
-    if ((xmax-xmin) !=0)
-      ratio=fabs(forced_xmax-forced_xmin)/fabs(xmax-xmin);
-    else
-      ratio=0;
-    
-    if (ratio>1)   // Make it always between 0 and 1   (0: very different, 1 equal)
-      ratio=1/ratio;
-    
-    
-    if (ratio > 0.03)     // Stop forcing if factor 33 of difference or less  
-    {
-      p[FORCEX_FLAG_PARAM].value  = 0;
-      forcex_state=0;
-    }
-    
-    
-    // Contver GUI values to seconds
-    xmin /= t_unit_factor;
-    xmax /= t_unit_factor;
-
-    TRACE("Xmin, Xmax: %10.8f, %10.8f\n", xmin, xmax);
-
-
-    int time_unit_gui=time_unit;
-    
-    int dec;
-    double rdec;
-
-    // Calculate the suitable FPGA decimation setting that optimally covers the GUI time frame
-    
-    if (p[TRIG_MODE_PARAM].value==0)  // Autotriggering mode => acquisition starts at time t=0
-      rdec= (xmax - 0) * c_osc_fpga_smpl_freq / OSC_FPGA_SIG_LEN;
-    else
-      rdec= (xmax - xmin) * c_osc_fpga_smpl_freq / OSC_FPGA_SIG_LEN;
-    
-    for (i = 0; i < 6; i++) {
-        dec = osc_fpga_cnv_time_range_to_dec(i);
-        if (dec >= rdec) {
-            break;
-        }
-    }
-    if (i > 5)
-        i = 5;
-    
-    // Optimal decimation setting identified
-    
-    
-    // Apply decimation parameter (time range), but not when forcing GUI client or during reset zoom.
-    
-    if ((forcex_state==0) && (reset_zoom==0))  
-    p[TIME_RANGE_PARAM].value = i;
-
-    
-    TRACE("Dcimation: %6.2f -> %dx\n", rdec, dec);
-    TRACE("Time range: %d\n", i);
-
-    TRACE("Reset zoom: %d\n", reset_zoom);
-    
-  
-    
-    
-    
-    /* New time_unit & factor */
-    time_unit = time_range_to_time_unit(p[TIME_RANGE_PARAM].value);
-    t_unit_factor = pow(10, 3*(2 - time_unit));
-
-    
-  
-    if (forcex_state==0)   // Update time unit Min and Max, but not if GUI hasn't responded to "forceX" command.
-    { 
-     p[MIN_GUI_PARAM].value = xmin * t_unit_factor;
-     p[MAX_GUI_PARAM].value = xmax * t_unit_factor;
-     p[TIME_UNIT_PARAM].value = time_unit;
-    }
-    else
-    {
-     p[MIN_GUI_PARAM].value = forced_xmin;
-     p[MAX_GUI_PARAM].value = forced_xmax;
-     p[TIME_UNIT_PARAM].value = forced_units;     
-    }
-    
-    
-    
-    
-    
-    // If time units changed by server: client MUST configure x axis (ForceX is set for this purpose by server)
-    // to p[MIN_GUI_PARAM].value, p[MIN_GUI_PARAM].value expressed in new units 
-    
-   
- 
-    
-    TRACE("New xmin, xmax [unit]: %6.2f  %6.2f [%d]\n",
-          p[MIN_GUI_PARAM].value,
-          p[MAX_GUI_PARAM].value,
-          (int)p[TIME_UNIT_PARAM].value);
-
-
-    int64_t t_delay;
-    
-    
-    // Calculating necessary trigger delay expressed in FPGA decimated cycles
-    if (p[TRIG_MODE_PARAM].value==0)  // Autotriggering mode => acquisition starts at time t=0
-     t_delay= OSC_FPGA_SIG_LEN ;
-    else
-     t_delay= OSC_FPGA_SIG_LEN + (xmin * c_osc_fpga_smpl_freq / dec);
-    
-    // Some limitations...
-    if (t_delay < 0)
-        t_delay = 0;
-    if (t_delay > ((int64_t)1 << 32) - 1)
-        t_delay = ((int64_t)1 << 32) - 1;
-
-    TRACE("Trigger delay: %d\n", (int)t_delay);
-    
-    
-    if (forcex_state==0)     // Trigger delay (reconverted in seconds) updated ONLY if client has responded to last forceX command
-    p[TRIG_DLY_PARAM].value = ((t_delay - OSC_FPGA_SIG_LEN) * dec / c_osc_fpga_smpl_freq);
-    else
-    p[TRIG_DLY_PARAM].value =forced_delay;  
-    
-   
-    // Server issues a forceX command when time units change wrt. GUI (client) units
-     if ((time_unit != time_unit_gui))
-    {
-     p[FORCEX_FLAG_PARAM].value  = 1.0;
-     forcex_state=1;
-     forced_xmin=p[MIN_GUI_PARAM].value;     // Other settings frozen until GUI recovers
-     forced_xmax=p[MAX_GUI_PARAM].value;
-     forced_units=p[TIME_UNIT_PARAM].value;
-     forced_delay=p[TRIG_DLY_PARAM].value;
-    }
-      
-      
-     if (reset_zoom==1)                      // When client issues a zoom reset, a particular ForceX command with the initial 0 - 130 us time range 
-    {
-       
-       p[FORCEX_FLAG_PARAM].value  = 1.0;
-  
-       
-       forced_xmin=0.0;
-       forced_xmax=130.0;
-       forced_units=0.0;
-       forced_delay=0;
-       
-       forcex_state=1;
-       
-       p[MIN_GUI_PARAM].value = forced_xmin;
-       p[MAX_GUI_PARAM].value = forced_xmax;
-       p[TIME_UNIT_PARAM].value = forced_units;        
-       p[TRIG_DLY_PARAM].value=forced_delay;
-       p[TIME_RANGE_PARAM].value = 0;
-    }  
-      
-    
-    
-    
-    
-    TRACE("Trigger delay: %10.6f\n", p[TRIG_DLY_PARAM].value);
-
-     
-    return ret;
-}
 
 
 int rp_set_params(rp_app_params_t *p, int len)
@@ -569,7 +218,6 @@ int rp_set_params(rp_app_params_t *p, int len)
     int i;
     int fpga_update = 1;
     int params_change = 0;
-    int awg_params_change = 0;
     
 
     if(len > PARAMS_NUM) {
@@ -605,10 +253,6 @@ int rp_set_params(rp_app_params_t *p, int len)
             continue;
 
         if(rp_main_params[p_idx].value != p[i].value) {
-            if(p_idx < PARAMS_AWG_PARAMS) 
-                params_change = 1;
-            if(p_idx >= PARAMS_AWG_PARAMS)
-                awg_params_change = 1;
             if(rp_main_params[p_idx].fpga_update)
                 fpga_update = 1;
         }
@@ -629,9 +273,6 @@ int rp_set_params(rp_app_params_t *p, int len)
     
     if(params_change || (params_init == 0)) {
 
-        pthread_mutex_lock(&rp_main_params_mutex);
-        transform_acq_params(rp_main_params);
-        pthread_mutex_unlock(&rp_main_params_mutex);
 
         /* First do health check and then send it to the worker! */
         int mode = rp_main_params[TRIG_MODE_PARAM].value;
@@ -759,16 +400,16 @@ int rp_set_params(rp_app_params_t *p, int len)
         t_start_idx = round(t_start / smpl_period);
         t_stop_idx  = round(t_stop / smpl_period);
 
-        if((((t_stop_idx-t_start_idx)/(float)((rp_main_params[LCR_STEPS].value)-1))) < 1)
+        if((((t_stop_idx-t_start_idx)/(float)(SIGNAL_LENGTH-1))) < 1)
             t_step_idx = 1;
         else {
-            t_step_idx = ceil((t_stop_idx-t_start_idx)/(float)((rp_main_params[LCR_STEPS].value)-1));
-            int max_step = OSC_FPGA_SIG_LEN/(rp_main_params[LCR_STEPS].value);
+            t_step_idx = ceil((t_stop_idx-t_start_idx)/(float)(SIGNAL_LENGTH-1));
+            int max_step = OSC_FPGA_SIG_LEN/SIGNAL_LENGTH;
             if(t_step_idx > max_step)
                 t_step_idx = max_step;
         }
 
-        t_stop = t_start + (rp_main_params[LCR_STEPS].value) * t_step_idx * smpl_period;
+        t_stop = t_start + SIGNAL_LENGTH * t_step_idx * smpl_period;
 
         /* write back and convert to set units */
         rp_main_params[MIN_GUI_PARAM].value = t_start;
@@ -813,8 +454,6 @@ int rp_set_params(rp_app_params_t *p, int len)
             rp_main_params[MIN_Y_PARAM].value *= ch2_delta;
             rp_main_params[MAX_Y_PARAM].value *= ch2_delta;
         }
-        rp_main_params[GEN_DC_OFFS_1].value *= ch1_delta;
-        rp_main_params[GEN_DC_OFFS_2].value *= ch2_delta;
 
         if((int)rp_main_params[TRIG_SRC_PARAM].value == 0) {
             /* Trigger selected on Channel 1 */
@@ -823,7 +462,6 @@ int rp_set_params(rp_app_params_t *p, int len)
             /* Trigger selected on Channel 2 */
             rp_main_params[TRIG_LEVEL_PARAM].value *= ch2_delta;
         }
-
 
         rp_osc_worker_update_params((rp_app_params_t *)&rp_main_params[0], 
                                     fpga_update);
@@ -852,19 +490,7 @@ int rp_set_params(rp_app_params_t *p, int len)
             rp_osc_clean_signals();
             rp_osc_worker_change_state(rp_osc_single_state);
         }
-    }
 
-    if(awg_params_change) {
-
-        /* Correct frequencies if needed */
-        rp_main_params[GEN_SIG_FREQ_CH1].value = 
-            rp_gen_limit_freq(rp_main_params[GEN_SIG_FREQ_CH1].value,
-                              rp_main_params[GEN_SIG_TYPE_CH1].value);
-        rp_main_params[GEN_SIG_FREQ_CH2].value = 
-            rp_gen_limit_freq(rp_main_params[GEN_SIG_FREQ_CH2].value,
-                              rp_main_params[GEN_SIG_TYPE_CH2].value);
-        if(generate_update(&rp_main_params[0]) < 0)
-            return -1;
     }
 
     return 0;
@@ -917,7 +543,7 @@ int rp_get_signals(float ***s, int *sig_num, int *sig_len)
         return -1;
 
     *sig_num = SIGNALS_NUM;
-    *sig_len = (rp_main_params[LCR_STEPS].value);
+    *sig_len = SIGNAL_LENGTH;
 
     ret_val = rp_osc_get_signals(s, &sig_idx);
     
@@ -925,7 +551,7 @@ int rp_get_signals(float ***s, int *sig_num, int *sig_len)
       printf("Starting OK\n");
     }
    //Not finished signal
-    if((ret_val != -1) && sig_idx != (rp_main_params[LCR_STEPS].value)-1) {
+    if((ret_val != -1) && sig_idx != SIGNAL_LENGTH-1) {
         return -2;
     }
     
@@ -950,12 +576,12 @@ int rp_create_signals(float ***a_signals)
         s[i] = NULL;
 
     for(i = 0; i < SIGNALS_NUM; i++) {
-        s[i] = (float *)malloc((rp_main_params[LCR_STEPS].value) * sizeof(float));
+        s[i] = (float *)malloc(SIGNAL_LENGTH * sizeof(float));
         if(s[i] == NULL) {
             rp_cleanup_signals(a_signals);
             return -1;
         }
-        memset(&s[i][0], 0, (rp_main_params[LCR_STEPS].value) * sizeof(float));
+        memset(&s[i][0], 0, SIGNAL_LENGTH * sizeof(float));
     }
     *a_signals = s;
 
@@ -968,7 +594,7 @@ void rp_cleanup_signals(float ***a_signals)
     float **s = *a_signals;
 
     if(s) {
-        for(i = 0; i < (rp_main_params[LCR_STEPS].value); i++) {
+        for(i = 0; i < SIGNAL_LENGTH; i++) {
             if(s[i]) {
                 free(s[i]);
                 s[i] = NULL;
@@ -1053,6 +679,7 @@ int rp_copy_params(rp_app_params_t *src, rp_app_params_t **dst)
         }
         
     }
+    
 
     *dst = p_new;
     return 0;
@@ -1069,6 +696,7 @@ int rp_copy_params(rp_app_params_t *src, rp_app_params_t **dst)
  * @param[in]   params  Application parameters to be deallocated
  * @retval      0       Success, never fails
  */
+
 int rp_clean_params(rp_app_params_t *params)
 {
     int i = 0;
@@ -1104,31 +732,4 @@ int rp_update_main_params(rp_app_params_t *params)
     return 0;
 }
 
-float rp_gen_limit_freq(float freq, float gen_type)
-{
-    int type = (int)gen_type;
 
-    if(freq < 0) {
-        freq = 0;
-    } else {
-        switch(type) {
-        case 0:
-            /* Sine */
-            if(freq > 50e6)
-                freq = 50e6;
-            break;
-        case 1:
-            /* Square */
-            if(freq > 20e6)
-                freq = 20e6;
-            break;
-        case 2:
-            /* Triangle */
-            if(freq > 25e6)
-                freq = 25e6;
-            break;
-        }
-    }
-
-    return freq;
-}
