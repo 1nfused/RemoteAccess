@@ -1,0 +1,21 @@
+</!DOCTYPE html>
+<html>
+<head>
+  <title>APP1</title>
+  <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div class="login-page">
+    <div class="form">
+      <form class="login-form" method="post">
+        <input type="text" placeholder="username"/>
+        <input type="password" placeholder="password"/>
+        <button class="btn btn-default" type="submit">LOGIN</button>
+        {% if error %}
+          <p class="error message" style="color:red">{{ error }}</p>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+</body>
+</html>
