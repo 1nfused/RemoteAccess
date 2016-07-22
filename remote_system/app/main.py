@@ -25,11 +25,11 @@ class User(db.Model):
     password = db.Column(db.String, default="root")
     role = db.Column(db.Boolean, default=False)
 
-    def __init__(self, name, username, email, password):
-        self.name = name
+    def __init__(self, username, password, name, email):
         self.username = username
-        self.email = email
         self.password = password
+        self.name = name
+        self.email = email
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -37,10 +37,11 @@ def login_page():
     error = None
     # Login authentication
     if request.method == 'POST':
-        print "POSTING"
-        login_user = request.form.get('username', type=str)
-        login_password = request.form.get('password', type=str)
+        login_user = request.form.get('data.username', type=str)
+        login_password = request.form.get('data.password', type=str)
 
+        print login_user
+        print login_password
         user = User.query.filter(
             User.username  == str(login_user)).first()
 
