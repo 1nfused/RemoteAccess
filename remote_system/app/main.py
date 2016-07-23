@@ -61,7 +61,21 @@ def login_page():
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html', error="error")
+    return render_template('index.html')
+
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+    return render_template('settings.html')
+
+
+@app.before_request
+def before_request():
+        try:
+            if session.get('logged_in'):
+                g.user = session.get('logged_user')
+        except AttributeError:
+            return None
 
 if __name__ == '__main__':
     app.run()
