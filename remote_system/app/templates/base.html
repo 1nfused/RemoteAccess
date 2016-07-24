@@ -31,12 +31,12 @@
 		                  </a>
 		                </li>
 		                <li>
-		                  <a href="{{ url_for('settings')  }}">
+		                  <a href="{{ url_for('settings', username=g.user) }}">
 		                  <i class="fa fa-cog fa-lg"></i> SETTINGS
 		                  </a>
 		                </li>
 		                <li>
-		                  <a href="">
+		                  <a href="{{ url_for('logout') }}">
 		                  <i class="fa glyphicon glyphicon-log-out fa-lg"></i> LOGOUT
 		                  </a>
 		                </li>
@@ -47,8 +47,12 @@
 		    <div class="status_page">
 		    	<table class="status_table">
 		    		<tr>
-		    			<td>STAUS: DISCONECTED</td>
-		    			<td>USERNAME</td>
+		    			{% if session.rp.connected == false %}
+		    				<td>STATUS: <strong style="color: red">DISCONECTED</strong></td>
+		    			{% else %}
+		    				<td>STATUS: <strong style="color: green">CONNECTED</strong></td>
+		    			{% endif %}
+		    			<td>Logged as: <strong>{{ session.logged_user }}</strong></td>
 		    		</tr>
 		    	</table>
 		    </div>

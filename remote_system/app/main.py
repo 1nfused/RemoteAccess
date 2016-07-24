@@ -50,6 +50,9 @@ def login_page():
                 login_password != user.password:
                     error = 'You shall not pass'
             else:
+                # Sesion
+                rp = { 'connected': False }
+                session['rp'] = rp
                 session['logged_in'] = True
                 session['logged_user'] = user.username
                 return redirect(url_for('index', user=user))
@@ -59,6 +62,11 @@ def login_page():
     return render_template('login.html', error=error)
 
 
+@app.route('/update_profile', methods=['GET', 'POST'])
+def update_profile():
+    return
+
+
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
@@ -66,7 +74,28 @@ def index():
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
+    # If we want to update our contant info
+    if request.method == 'POST':
+
+        username = request.form.get('username', type=str)
+        name = request.form.get('name', type=str)
+        surname = request.form.get('surname', type=str)
+        email = request.form.get('email', type=str)
+
+        user = User(username, "root", name, email)
+        db.session.add(user)
+        db.session.commit()
+        print "Adde user"
+        return redirect(url_for('settings'))
+
     return render_template('settings.html')
+
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    session.pop('logged_user', None)
+    return redirect(url_for('/'))
 
 
 @app.before_request

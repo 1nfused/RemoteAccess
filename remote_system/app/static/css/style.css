@@ -227,9 +227,9 @@ table {
 th, td {
     font-family: FontAwesome;
     text-align: left;
-    padding: 8px;
-    width: 100px;
-    border:1px  solid white; /* Color of the chosen background */
+    padding: 4px;
+    width: 120px;
+    border-left: 1px solid white; /* Color of the chosen background */
     text-align: center;
     color: white;
     font-size: 12px;
