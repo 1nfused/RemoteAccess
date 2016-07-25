@@ -247,14 +247,14 @@ th, td {
 }
 
 .left_block2 {
-  height: 65%;
+  height: 33%;
   margin-top: 5%;
   background-color: white;
   padding: 5px 5px 5px 5px;
 }
 
 .left_block1 {
-  height: 33%;
+  height: 55%;
   background-color: white;
   padding: 5px 5px 5px 5px;
 }
@@ -266,8 +266,17 @@ th, td {
   padding-left: 10px; 
 }
 
-.left_content hr{
+.latency_block{
+  height: 10%;
+  background-color: green;
+  padding: 5px 5px 5px 5px;
+}
 
+.latency_block h2{
+  font-size: 30px;
+  text-align: center;
+  vertical-align: middle;
+  padding-top: 10px;
 }
 
 
