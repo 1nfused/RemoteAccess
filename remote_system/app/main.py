@@ -105,7 +105,6 @@ def connect_pitaya():
         return render_template(
             'index.html',
             error="error")
-    print "We are ok! :)"
     flash("Successfully connected %s with MAC: %s" % (rp, mac)) 
     return redirect(url_for('index'))
 
