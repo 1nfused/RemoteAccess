@@ -4,7 +4,55 @@
 {% block extra_header %}{% endblock %}
 
 {% block content %}
-<div>
-	
+<div class="right_content">
+	{% if not error %}
+		{% with messages = get_flashed_messages() %}
+		  {% if messages %}
+		    {% for message in messages %}
+		      <div class="alert alert-success alert-dismissible" role="alert">
+			      <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+			      {{ message }}
+		      </div>
+		    {% endfor %}
+		    </ul>
+		  {% endif %}
+		{% endwith %}
+	{% else %}
+		{% with messages = get_flashed_messages() %}
+		  {% if messages %}
+		    {% for message in messages %}
+		      <div class="alert alert-danger alert-dismissible" role="alert">{{ message }}</div>
+		      <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+		    {% endfor %}
+		    </ul>
+		  {% endif %}
+		{% endwith %}
+	{% endif %}
+</div>
+<div class="left_content">
+	<div class="left_block1">
+		<h2>Log</h2>
+		<hr class="custom_breaker">
+		<label>IP: </label><label></label><br>
+		<label>Name: </label><label></label><br>
+		<label>Active: </label><label></label><br>
+		<label>Version: </label><label></label><br>
+		<label>File system: </label><label></label><br>
+		<label>Fpga system: </label><label></label><br>
+	</div>
+	<div class="left_block2">
+		<h2>Avaliable Red Pitaya</h2>
+		<hr class="custom_breaker">
+		<form action="/connect_pitaya", method="post">
+			<button name="button_pitaya" type="submit" class="col-xs-12" value="pitaya1">Red Pitaya 1</button><br>
+		</form>
+		<form action="/connect_pitaya", method="post">
+			<button name="button_pitaya" type="submit" class="col-xs-12" value="pitaya2">Red Pitaya 2</button><br>
+		</form>
+		<form action="/connect_pitaya", method="post">
+			<button name="button_pitaya" type="submit" class="col-xs-12" value="pitaya3">Red Pitaya 3</button><br>
+		</form>
+		<hr>
+	</div>
 </div>
 {% endblock %}

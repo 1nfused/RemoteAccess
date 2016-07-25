@@ -8,6 +8,10 @@ from sqlalchemy.orm import relationship
 import datetime
 import json
 import logging
+import requests
+from requests.exceptions import HTTPError, ConnectionError
+
+import constants
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
@@ -15,6 +19,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
+# User class
 class User(db.Model):
     __tablename__ = "users"
 
@@ -23,13 +28,26 @@ class User(db.Model):
     name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False)
     password = db.Column(db.String, default="root")
-    role = db.Column(db.Boolean, default=False)
+    role = db.Column(db.Boolean, nullable=False)
 
     def __init__(self, username, password, name, email):
         self.username = username
         self.password = password
         self.name = name
         self.email = email
+
+
+# Red Pitaya instance class
+class RedPitaya(db.Model):
+    __tablename__ = "redpitaya"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    mac = db.Column(db.String, nullable=False)
+
+    def __init__(self, name, mac):
+        self.name = name
+        self.mac = mac
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -72,12 +90,38 @@ def index():
     return render_template('index.html')
 
 
+# One of the main functions
+@app.route('/connect_pitaya', methods=['POST'])
+def connect_pitaya():
+
+    rp = request.form.get('button_pitaya', type=str)
+    mac = constants.registred_red_pitaya.get(rp)
+
+    # Try and connect to the redpitaya
+    try:
+        r = requests.get("http://www.ip-address.com")  
+    except ConnectionError:
+        flash("Could not connect Red Pitaya. Please check your connection")
+        return render_template(
+            'index.html',
+            error="error")
+    print "We are ok! :)"
+    flash("Successfully connected %s with MAC: %s" % (rp, mac)) 
+    return redirect(url_for('index'))
+
+
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
+    response = {"success": True }
     # If we want to update our contant info
     if request.method == 'POST':
 
         username = request.form.get('username', type=str)
+        if User.query.filter(username == username).first():
+            response = {
+                "success": False, "error": "Username already exists"}
+            return redirect(url_for('settings', response=response))
+
         name = request.form.get('name', type=str)
         surname = request.form.get('surname', type=str)
         email = request.form.get('email', type=str)
@@ -85,10 +129,10 @@ def settings():
         user = User(username, "root", name, email)
         db.session.add(user)
         db.session.commit()
-        print "Adde user"
-        return redirect(url_for('settings'))
+        response = {"success": True, "error": "Successfully created user" }
+        return redirect(url_for('settings', response=response))
 
-    return render_template('settings.html')
+    return render_template('settings.html', response=response)
 
 
 @app.route('/logout')
@@ -107,4 +151,6 @@ def before_request():
             return None
 
 if __name__ == '__main__':
+    # Global jinja functions
+    app.jinja_env.globals.update(connect_pitaya=connect_pitaya)
     app.run()

@@ -59,5 +59,10 @@
 		      <button href="{{ url_for('settings') }}" class="custom_button" type="submit">Update profile</button>
 		    </div>
 		</form>
+		{% if response.success == false %}
+			<p class="error message" style="color:red">{{ response.error }}</p>
+		{% else %}
+			<p class="error message" style="color:green">{{ response.error }}</p>
+		{% endif %}
 	</div>
 {% endblock %}
