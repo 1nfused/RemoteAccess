@@ -80,9 +80,17 @@ def login_page():
     return render_template('login.html', error=error)
 
 
-@app.route('/update_profile', methods=['GET', 'POST'])
-def update_profile():
-    return
+@app.route('/scpi_server', methods=['GET', 'POST'])
+def scpi_server():
+
+    if request.method == 'POST':
+        flash("Successfully executed SCPI command")
+        flash(request.form.get('scpi_command'))
+        flash(request.form.get('scpi_args'))
+        return redirect(url_for('scpi_server'))
+
+    return render_template('scpi_server.html')
+
 
 @app.route('/gpio', methods=['GET'])
 def gpio():

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block extra_scripts %}{% endblock %}
+{% block extra_header %}{% endblock %}
+
+{% block content %}
+<dvi class="content scpi_content">
+	{% with messages = get_flashed_messages() %}
+	  {% if messages %}
+	    {% for message in messages %}
+	      <div class="alert alert-success alert-dismissible" role="alert">
+		      <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+		      {{ message }}
+	      </div>
+	    {% endfor %}
+	    </ul>
+	  {% endif %}
+	{% endwith %}
+	<div class="settings_header">
+		<h2><strong>EXECUTE SCPI COMMANDS</strong></h2>
+	</div>
+	<hr class="custom_breaker">
+
+	<div class="form_data">
+		<form action="" class="form-horizontal" method="post">
+			<div class="form-group">
+			    <label for="username" class="col-xs-4 col-sm-2 control-label">Command</label>
+			    <div class="col-xs-4 col-sm-4">
+			      <input class="form-control" id="scpi_command" name="scpi_command" type="text" placeholder="SC[PI]:COMmand">
+			    </div>
+			    <div class="col-xs-4 col-sm-4">
+			      <input class="form-control" id="scpi_args" name="scpi_args" type="username" placeholder="SCPI ARG1; SCPI ARGS2;">
+			    </div>
+		  	</div>
+
+		  	<div class="col-sm-offset-2">
+		      <button name="scpi_command" href="{{ url_for('scpi_server') }}" class="custom_button" type="submit">Execute command</button>
+		    </div>
+		 </form>
+	</div>
+</dvi>
+{% endblock %}

@@ -187,6 +187,7 @@ body{
   height: 3%;
   background-color: black;
   float: right;
+  text-align: middle;
 }
 
 /* CUSTOMER CONTENT HEIGHTS */
@@ -203,11 +204,15 @@ body{
 }
 
 .settings_content {
-  height: 60%;
+  height: 55%;
 }
 
 .content_registers{
   height: 70%;
+}
+
+.scpi_content{
+  height: 50%;
 }
 
 .content h2{
@@ -230,16 +235,15 @@ body{
   float: right;
 }
 
-table {
+.status_table {
       border-collapse: collapse;
       width: 35%;
       height: 100%;
       float: right;
   }
  
-th, td {
+.status_table th, td {
     font-family: FontAwesome;
-    text-align: left;
     padding: 4px;
     width: 120px;
     border-left: 1px solid white; /* Color of the chosen background */
@@ -314,7 +318,7 @@ th, td {
     color: red;
 }
 
-.gpio_table th, td {
+.gpio_table th, .gpio_table td {
     text-align: left;
     padding: 8px;
 }
