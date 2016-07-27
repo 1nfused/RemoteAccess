@@ -23,12 +23,24 @@
 		    <div class="nav-side-menu">
 		    	<div class="brand">System Menu</div>
 		    	<i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
-			    <div class="menu-list">
+			    <div id="side_menu" class="menu-list">
 					<ul id="menu-content" class="menu-content collapse out">
 		                <li class="active">
 		                  <a href="{{ url_for('index')  }}">
 		                  <i class="fa fa-home fa-lg"></i> CONTROL
 		                  </a>
+		                </li>
+		                <li>
+		                	<a href="{{ url_for('gpio') }}">
+		                	<i class="fa glyphicon glyphicon-pushpin fa-lg"></i>I/O PINS</a>
+		                </li>
+		                <li>
+		                	<a href="{{ url_for('registers') }}">
+		                	<i class="fa glyphicon glyphicon-flash fa-lg"></i>REGISTERS STATUS</a>
+		                </li>
+		                <li>
+		                	<a href="">
+		                	<i class="fa glyphicon glyphicon-send fa-lg"></i>SCPI SERVER</a>
 		                </li>
 		                <li>
 		                  <a href="{{ url_for('settings', username=g.user) }}">
@@ -56,10 +68,20 @@
 		    		</tr>
 		    	</table>
 		    </div>
-		    <div class="content">
-		    	{% block content %}
-				{% endblock %}
-			</div>
+	    	{% block content %}
+			{% endblock %}
 		</div>
   	</body>
+
+	<script>
+	/*
+  		$('.menu-content li a').click(function(e) {
+  			$('.menu-content li').removeClass('active');
+		  	var $parent = $(this).parent();
+		  	if (!$parent.hasClass('active')) {
+		    	$parent.addClass('active');
+		  	}
+		  	e.preventDefault();
+		}); */
+  	</script>  	
 </html>

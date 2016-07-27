@@ -84,6 +84,15 @@ def login_page():
 def update_profile():
     return
 
+@app.route('/gpio', methods=['GET'])
+def gpio():
+    return render_template('io_pins.html')
+
+
+@app.route('/registers', methods=['POST', 'GET'])
+def registers():
+    return render_template('registers.html')
+
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
@@ -109,12 +118,15 @@ def connect_pitaya():
     return redirect(url_for('index'))
 
 
-@app.route('/settings', methods=['GET', 'POST'])
+@app.route('/settings', methods=['POST', 'GET'])
 def settings():
     response = {"success": True }
     # If we want to update our contant info
+    print("Here we are")
+    print(request.form.get("add_user", type=str))
+    print(request.form.get("add_pitaya", type=str))
+    
     if request.method == 'POST':
-
         username = request.form.get('username', type=str)
         if User.query.filter(username == username).first():
             response = {

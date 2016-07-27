@@ -1,15 +1,16 @@
 {% extends "base.html" %}
-{% block extran_scripts %}{% endblock %}
+{% block extra_scripts %}{% endblock %}
 {% block extra_header %}{% endblock %}
 
 {% block content %}
+<div class="content settings_content">
 	<div class="settings_header">
 		<h2><strong>ADD REDPITAYA</strong></h2>
 	</div>
 	<hr class="custom_breaker">
 
 	<div class="form_data">
-		<form action="" class="form-horizontal">
+		<form action="" class="form-horizontal" method="post">
 			<div class="form-group">
 			    <label for="username" class="col-xs-4 col-sm-2 control-label">Name</label>
 			    <div class="col-xs-8 col-sm-8">
@@ -22,6 +23,10 @@
 			      <input class="form-control" id="mac" name="username" type="username">
 			    </div>
 		  	</div>
+
+		  	<div class="col-sm-offset-2">
+		      <button name="add_pitaya" value="pitaya" href="{{ url_for('settings') }}" class="custom_button" type="submit">Add Pitaya</button>
+		    </div>
 		</form>
 
 	  	<div class="settings_header">
@@ -56,7 +61,7 @@
 		  	</div>
 
 		  	<div class="col-sm-offset-2">
-		      <button href="{{ url_for('settings') }}" class="custom_button" type="submit">Update profile</button>
+		      <button name="add_user" value="user" href="{{ url_for('settings') }}" class="custom_button" type="submit">Update profile</button>
 		    </div>
 		</form>
 		{% if response.success == false %}
@@ -65,4 +70,5 @@
 			<p class="error message" style="color:green">{{ response.error }}</p>
 		{% endif %}
 	</div>
+</div>
 {% endblock %}
