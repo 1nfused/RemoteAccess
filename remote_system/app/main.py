@@ -9,6 +9,7 @@ import datetime
 import json
 import logging
 import requests
+import os
 from requests.exceptions import HTTPError, ConnectionError
 
 import constants
@@ -28,7 +29,7 @@ class User(db.Model):
     name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False)
     password = db.Column(db.String, default="root")
-    role = db.Column(db.Boolean, nullable=False)
+    role = db.Column(db.Boolean, default=False)
 
     def __init__(self, username, password, name, email):
         self.username = username
@@ -111,18 +112,31 @@ def index():
 @app.route('/connect_pitaya', methods=['POST'])
 def connect_pitaya():
 
-    rp = request.form.get('button_pitaya', type=str)
-    mac = constants.registred_red_pitaya.get(rp)
+    rp_name = request.form.get('button_pitaya', type=str)
+    rp_mac = constants.registred_red_pitaya.get(rp_name)
+    rp_temp_dir = "/tmp/pitaya1"
 
     # Try and connect to the redpitaya
     try:
-        r = requests.get("http://www.ip-address.com")  
+        # TODO: DISCOVER PITAYA
+        # TODO: On page load, check avaliability of all pitayas
+        rp_ip = "192.168.1.100" # = discover(rp_mac)
+        # if not os.path.exists(rp_temp_dir):
+        #    os.makedirs(rp_temp_dir)
+        response = os.system(
+            "echo root | sshfs -o "
+            "password_stdin root@192.168.1.100:/ /tmp/pitaya")
+
+        if response == 0:
+            session.rp["connected"] = True
     except ConnectionError:
-        flash("Could not connect Red Pitaya. Please check your connection")
+        flash(
+            "Could not connect Red Pitaya."
+            "Please check your connection")
         return render_template(
             'index.html',
             error="error")
-    flash("Successfully connected %s with MAC: %s" % (rp, mac)) 
+    flash("Successfully connected %s with MAC: %s" % (rp_name, rp_mac)) 
     return redirect(url_for('index'))
 
 
