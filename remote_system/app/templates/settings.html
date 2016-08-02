@@ -4,28 +4,50 @@
 
 {% block content %}
 <div class="content settings_content">
+	{% if not error %}
+		{% with messages = get_flashed_messages() %}
+		  {% if messages %}
+		    {% for message in messages %}
+		      <div class="alert alert-success alert-dismissible" role="alert">
+			      <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+			      {{ message }}
+		      </div>
+		    {% endfor %}
+		  {% endif %}
+		{% endwith %}
+	{% else %}
+		{% with messages = get_flashed_messages() %}
+		  {% if messages %}
+		    {% for message in messages %}
+		      <div class="alert alert-danger alert-dismissible" role="alert">{{ message }}
+		      	<button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+		      </div>
+		    {% endfor %}
+		  {% endif %}
+		{% endwith %}
+	{% endif %}
 	<div class="settings_header">
 		<h2><strong>ADD REDPITAYA</strong></h2>
 	</div>
 	<hr class="custom_breaker">
 
 	<div class="form_data">
-		<form action="" class="form-horizontal" method="post">
+		<form id="add_pitaya" action="" class="form-horizontal" method="post">
 			<div class="form-group">
 			    <label for="username" class="col-xs-4 col-sm-2 control-label">Name</label>
 			    <div class="col-xs-8 col-sm-8">
-			      <input class="form-control" id="name" name="username" type="username">
+			      <input class="form-control" id="name" name="rp_name" type="username">
 			    </div>
 		  	</div>
 		  	<div class="form-group">
 			    <label for="username" class="col-xs-4 col-sm-2 control-label">MAC</label>
 			    <div class="col-xs-8 col-sm-8">
-			      <input class="form-control" id="mac" name="username" type="username">
+			      <input class="form-control" id="mac" name="rp_mac" type="username">
 			    </div>
 		  	</div>
 
 		  	<div class="col-sm-offset-2">
-		      <button name="add_pitaya" value="pitaya" href="{{ url_for('settings') }}" class="custom_button" type="submit">Add Pitaya</button>
+		      <button name="settings_add" value="pitaya" href="{{ url_for('settings') }}" class="custom_button" type="submit">Add Pitaya</button>
 		    </div>
 		</form>
 
@@ -61,14 +83,9 @@
 		  	</div>
 
 		  	<div class="col-sm-offset-2">
-		      <button name="add_user" value="user" href="{{ url_for('settings') }}" class="custom_button" type="submit">Update profile</button>
+		      <button name="settings_add" value="user" href="{{ url_for('settings') }}" class="custom_button" type="submit">Add user</button>
 		    </div>
 		</form>
-		{% if response.success == false %}
-			<p class="error message" style="color:red">{{ response.error }}</p>
-		{% else %}
-			<p class="error message" style="color:green">{{ response.error }}</p>
-		{% endif %}
 	</div>
 </div>
 {% endblock %}

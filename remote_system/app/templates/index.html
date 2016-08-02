@@ -15,7 +15,6 @@
 				      {{ message }}
 			      </div>
 			    {% endfor %}
-			    </ul>
 			  {% endif %}
 			{% endwith %}
 		{% else %}
@@ -23,9 +22,9 @@
 			  {% if messages %}
 			    {% for message in messages %}
 			      <div class="alert alert-danger alert-dismissible" role="alert">{{ message }}</div>
-			      <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+			      	<button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+			      </div>
 			    {% endfor %}
-			    </ul>
 			  {% endif %}
 			{% endwith %}
 		{% endif %}
@@ -49,16 +48,6 @@
 			<hr class="custom_breaker">
 			<form action="/connect_pitaya", method="post">
 				<button name="button_pitaya" type="submit" class="btn bnt-primary col-xs-12" value="pitaya_1">Red Pitaya 1</button>
-			</form>
-			<br>
-			<hr class="custom_breaker">
-			<form action="/connect_pitaya", method="post">
-				<button name="button_pitaya" type="submit" class="btn bnt-primary col-xs-12" value="pitaya_2">Red Pitaya 2</button>
-			</form>
-			<br>
-			<hr class="custom_breaker">
-			<form action="/connect_pitaya", method="post">
-				<button name="button_pitaya" type="submit" class="btn bnt-primary col-xs-12" value="pitaya_3">Red Pitaya 3</button>
 			</form>
 			<br>
 		</div>

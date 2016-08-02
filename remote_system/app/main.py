@@ -105,6 +105,11 @@ def registers():
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
+    
+    # Get all avaliable Red Pitaya
+    registred_pitayas = RedPitaya.query.all()
+    print registred_pitayas
+
     return render_template('index.html')
 
 
@@ -142,29 +147,60 @@ def connect_pitaya():
 
 @app.route('/settings', methods=['POST', 'GET'])
 def settings():
-    response = {"success": True }
-    # If we want to update our contant info
-    print("Here we are")
-    print(request.form.get("add_user", type=str))
-    print(request.form.get("add_pitaya", type=str))
-    
-    if request.method == 'POST':
+    response = {
+        "success": True
+    }
+
+    add_type = request.form.get('settings_add')
+
+    if request.method == 'POST' and add_type == 'user':
         username = request.form.get('username', type=str)
-        if User.query.filter(username == username).first():
-            response = {
-                "success": False, "error": "Username already exists"}
-            return redirect(url_for('settings', response=response))
+        if User.query.filter(User.username == username).first():
+            flash("User with username %s already exists" % username)
+            return render_template('settings.html', error="error")
 
         name = request.form.get('name', type=str)
         surname = request.form.get('surname', type=str)
         email = request.form.get('email', type=str)
 
+        if not name or not surname or not email:
+            flash("All fields are required!")
+            return render_template('settings.html', error="error")
+
+        # Create user
         user = User(username, "root", name, email)
         db.session.add(user)
         db.session.commit()
-        response = {"success": True, "error": "Successfully created user" }
-        return redirect(url_for('settings', response=response))
+        
+        # Flash response
+        response = { "success": True }
+        flash("Successfully created user %s" % (username))
+        return redirect(url_for('settings.html', response=response))
+    
+    elif request.method == 'POST' and add_type == 'pitaya':
+        rp_name = \
+            request.form.get("rp_name", type=str)
+        rp_mac = \
+            request.form.get("rp_mac", type=str)
 
+        # Check if MAC is correct right away
+        if len(rp_mac) != 12:
+            flash("Invalid MAC address!")
+            return render_template('settings.html', error="error")
+
+        if not rp_name or not rp_mac:
+            flash("All fields are require!")
+            return render_template('settings.html', error="error")
+
+        if RedPitaya.query.filter(RedPitaya.mac == rp_mac).first():
+            flash("RedPitaya already exists!")
+            return render_template('settings.html', error="error")
+        else:
+            rp = RedPitaya(rp_name, rp_mac)
+            db.session.add(rp)
+            db.session.commit()
+
+    flash("Successfully created Red Pitaya %s" % rp_name)
     return render_template('settings.html', response=response)
 
 
