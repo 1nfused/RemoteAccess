@@ -81,14 +81,21 @@ def login_page():
     return render_template('login.html', error=error)
 
 
+# Uses sockets to connect to a scpi server running on a remote device
 @app.route('/scpi_server', methods=['GET', 'POST'])
 def scpi_server():
 
+    # Scpi args are in form ARG1 ARG2,...,ARGN
+    # as defined in scpi-99 standard
+    scpi_command = request.form.get('scpi_command')
+    scpi_args = request.form.get('scpi_args').split(' ')
+    rp = session.rp
+
     if request.method == 'POST':
-        flash("Successfully executed SCPI command")
-        flash(request.form.get('scpi_command'))
-        flash(request.form.get('scpi_args'))
-        return redirect(url_for('scpi_server'))
+        try:
+            flash("Successfully executed SCPI command")
+        except:
+
 
     return render_template('scpi_server.html')
 
