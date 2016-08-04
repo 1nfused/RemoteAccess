@@ -21,11 +21,12 @@ pathlib2==2.1.0
 peewee==2.8.0
 pexpect==4.0.1
 pickleshare==0.7.2
-psycopg2==2.6.1
+pkg-resources==0.0.0
+psycopg2==2.6.2
 ptyprocess==0.5.1
-pycparser==2.14
 python-editor==1.0
 pytz==2016.3
+requests==2.10.0
 simplegeneric==0.8.1
 six==1.10.0
 speaklater==1.3

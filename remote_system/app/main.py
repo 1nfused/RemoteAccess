@@ -53,9 +53,11 @@ class RedPitaya(db.Model):
 
 @app.route('/', methods=['GET', 'POST'])
 def login_page():
+        
     error = None
     # Login authentication
     if request.method == 'POST':
+        
         login_user = request.form.get('data.username', type=str)
         login_password = request.form.get('data.password', type=str)
 
@@ -95,23 +97,15 @@ def scpi_server():
         try:
             flash("Successfully executed SCPI command")
         except:
-
-
+            flash("SCPI command failed to execute")
     return render_template('scpi_server.html')
-
-
-@app.route('/gpio', methods=['GET'])
-def gpio():
-    return render_template('io_pins.html')
-
-
-@app.route('/registers', methods=['POST', 'GET'])
-def registers():
-    return render_template('registers.html')
-
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
+    # TODO: Page load: Discover all pitaya
+    # - Get all rp mac, get all ip intro a list
+    # ping all IP and on success response add rp into context list
+    # after that, send context list to index.html
     
     # Get all avaliable Red Pitaya
     registred_pitayas = RedPitaya.query.all()
@@ -119,38 +113,9 @@ def index():
 
     return render_template('index.html')
 
-
-# One of the main functions
-@app.route('/connect_pitaya', methods=['POST'])
-def connect_pitaya():
-
-    rp_name = request.form.get('button_pitaya', type=str)
-    rp_mac = constants.registred_red_pitaya.get(rp_name)
-    rp_temp_dir = "/tmp/pitaya1"
-
-    # Try and connect to the redpitaya
-    try:
-        # TODO: DISCOVER PITAYA
-        # TODO: On page load, check avaliability of all pitayas
-        rp_ip = "192.168.1.100" # = discover(rp_mac)
-        # if not os.path.exists(rp_temp_dir):
-        #    os.makedirs(rp_temp_dir)
-        response = os.system(
-            "echo root | sshfs -o "
-            "password_stdin root@192.168.1.100:/ /tmp/pitaya")
-
-        if response == 0:
-            session.rp["connected"] = True
-    except ConnectionError:
-        flash(
-            "Could not connect Red Pitaya."
-            "Please check your connection")
-        return render_template(
-            'index.html',
-            error="error")
-    flash("Successfully connected %s with MAC: %s" % (rp_name, rp_mac)) 
-    return redirect(url_for('index'))
-
+@app.route('/logs', methods=['GET', 'POST'])
+def logs():
+    return render_template('logs.html')
 
 @app.route('/settings', methods=['POST', 'GET'])
 def settings():
@@ -191,7 +156,7 @@ def settings():
             request.form.get("rp_mac", type=str)
 
         # Check if MAC is correct right away
-        if len(rp_mac) != 12:
+        if len(rp_mac) != 17:
             flash("Invalid MAC address!")
             return render_template('settings.html', error="error")
 
@@ -207,9 +172,54 @@ def settings():
             db.session.add(rp)
             db.session.commit()
 
-    flash("Successfully created Red Pitaya %s" % rp_name)
+        flash("Successfully created Red Pitaya %s" % rp_name)
     return render_template('settings.html', response=response)
 
+# IDEA FOR registers
+# When the redpitaya gets mounted, execute a C script or something, that will
+# run in the background and constantly pool data from the registers and GPIO
+
+@app.route('/gpio', methods=['GET'])
+def gpio():
+    # Read GPIO file from mounted RP
+    return render_template('io_pins.html')
+
+
+@app.route('/registers', methods=['POST', 'GET'])
+def registers():
+    # Read registers file from mounted RP
+    return render_template('registers.html')
+
+# One of the main functions
+@app.route('/connect_pitaya', methods=['POST'])
+def connect_pitaya():
+
+    # When the pitaya gets connected, we have to initiate
+    # a bunch of crap. Like scpi server. Like a custom C script
+    # that will pull on registers.
+
+    rp_name = request.form.get('button_pitaya', type=str)
+    rp_mac = constants.registred_red_pitaya.get(rp_name)
+    rp_temp_dir = "/tmp/pitaya1"
+
+    # Try and connect to the redpitaya
+    try:
+        rp_ip = "192.168.1.100" # = discover(rp_mac)
+        response = os.system(
+            "echo root | sshfs -o "
+            "password_stdin root@192.168.1.100:/ /tmp/pitaya")
+
+        if response == 0:
+            session.rp["connected"] = True
+    except ConnectionError:
+        flash(
+            "Could not connect Red Pitaya."
+            "Please check your connection")
+        return render_template(
+            'index.html',
+            error="error")
+    flash("Successfully connected %s with MAC: %s" % (rp_name, rp_mac)) 
+    return redirect(url_for('index'))
 
 @app.route('/logout')
 def logout():
