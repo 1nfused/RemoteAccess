@@ -5,6 +5,7 @@ import json
 import logging
 import requests
 import urllib2
+import subprocess
 
 from flask import Flask, render_template, \
     request, url_for, redirect, session, flash, g
@@ -33,7 +34,7 @@ class User(db.Model):
     password = db.Column(db.String, default="root")
     role = db.Column(db.Boolean, default=False)
 
-    def __init__(self, username, password, name, email):
+    def __init__(self, username, password, name, email, group_id):
         self.username = username
         self.password = password
         self.name = name
@@ -48,7 +49,7 @@ class RedPitaya(db.Model):
     name = db.Column(db.String, nullable=False)
     mac = db.Column(db.String, nullable=False)
 
-    def __init__(self, name, mac):
+    def __init__(self, name, mac, group_id):
         self.name = name
         self.mac = mac
 
@@ -74,7 +75,10 @@ def login_page():
                     error = 'You shall not pass'
             else:
                 # Sesion
-                rp = { 'connected': False }
+                rp = { 
+                    'connected': False,
+                    'ip': None
+                }
                 session['rp'] = rp
                 session['logged_in'] = True
                 session['logged_user'] = user.username
@@ -92,8 +96,11 @@ def scpi_server():
     # Scpi args are in form ARG1 ARG2,...,ARGN
     # as defined in scpi-99 standard
     scpi_command = request.form.get('scpi_command')
-    scpi_args = request.form.get('scpi_args').split(' ')
-    rp = session.rp
+    scpi_args = request.form.get('scpi_args')
+    if scpi_args:
+        scpi_args = scpi_args.split(' ')
+    
+    rp = session['rp']
 
     if request.method == 'POST':
         try:
@@ -104,18 +111,39 @@ def scpi_server():
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    
-    # Get all avaliable Red Pitaya
-    registered_pitayas = RedPitaya.query.all()
-    for pitaya in registered_pitayas:
-        response = \
-            urllib2.urlopen(
-                "http://discovery.redpitaya.com/discover?mac=%s" % pitaya.mac, 
-                timeout = 5)
-        content = response.read()
-        print content
+        
+    avaliable_rp = {}
 
-    return render_template('index.html')
+    # Get all avaliable Red Pitaya in subnet 192.168.1.X
+    rp_sweep = \
+        subprocess.Popen(
+            ['sudo', 'arp-scan', '--interface=wlp3s0', '192.168.1.0/24'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            stdin=subprocess.PIPE)
+
+    stdout, stderr = rp_sweep.communicate()
+
+    # Avaliable Red Pitaya are a combination of registred rp and found rp
+    # with arp-scan
+    for address in stdout.split('\n'):
+        split = address.split('\t')
+        try:
+            if split[2] == constants.RP_HOSTNAME:
+                # Get a pitaya with the same mac
+                rp = RedPitaya.query.filter(
+                    RedPitaya.mac == split[1].upper()).first()
+                # Append pitaya to list if any
+                if rp:
+                    avaliable_rp[split[0]] = rp 
+            else:
+                continue
+        except IndexError:
+            continue
+
+    return render_template(
+        'index.html', 
+        avaliable_rp=avaliable_rp)
 
 @app.route('/logs', methods=['GET', 'POST'])
 def logs():
@@ -207,23 +235,23 @@ def connect_pitaya():
     rp_temp_dir = "/tmp/pitaya1"
 
     # Try and connect to the redpitaya
-    try:
-        rp_ip = "192.168.1.100" # = discover(rp_mac)
-        response = os.system(
-            "echo root | sshfs -o "
-            "password_stdin root@192.168.1.100:/ /tmp/pitaya")
+    rp_ip = "192.168.1.100" # = discover(rp_mac)
+    response = os.system(
+        "echo root | sshfs -o "
+        "password_stdin root@192.168.1.239:/ /tmp/pitaya")
 
-        if response == 0:
-            session.rp["connected"] = True
-    except ConnectionError:
-        flash(
-            "Could not connect Red Pitaya."
-            "Please check your connection")
-        return render_template(
-            'index.html',
-            error="error")
-    flash("Successfully connected %s with MAC: %s" % (rp_name, rp_mac)) 
-    return redirect(url_for('index'))
+    # Successfully connected rp
+    if response == 0:
+        session.rp = {
+            'connected': True,
+            'ip': rp_ip
+        }
+        flash("Successfully connected %s with MAC: %s" % (rp_name, rp_mac)) 
+    else:
+        flash("Could not connect Red Pitaya. Please check your connection.")
+
+    return render_template('index.html', error="error")
+
 
 @app.route('/logout')
 def logout():
