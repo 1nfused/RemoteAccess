@@ -1,15 +1,17 @@
-from flask import Flask, render_template, \
-    request, url_for, redirect, session, flash, g
 
-from flask.ext.sqlalchemy import SQLAlchemy
 import os
-from sqlalchemy import ForeignKey, DateTime
-from sqlalchemy.orm import relationship
 import datetime
 import json
 import logging
 import requests
-import os
+import urllib2
+
+from flask import Flask, render_template, \
+    request, url_for, redirect, session, flash, g
+
+from flask.ext.sqlalchemy import SQLAlchemy
+from sqlalchemy import ForeignKey, DateTime
+from sqlalchemy.orm import relationship
 from requests.exceptions import HTTPError, ConnectionError
 
 import constants
@@ -102,14 +104,16 @@ def scpi_server():
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    # TODO: Page load: Discover all pitaya
-    # - Get all rp mac, get all ip intro a list
-    # ping all IP and on success response add rp into context list
-    # after that, send context list to index.html
     
     # Get all avaliable Red Pitaya
-    registred_pitayas = RedPitaya.query.all()
-    print registred_pitayas
+    registered_pitayas = RedPitaya.query.all()
+    for pitaya in registered_pitayas:
+        response = \
+            urllib2.urlopen(
+                "http://discovery.redpitaya.com/discover?mac=%s" % pitaya.mac, 
+                timeout = 5)
+        content = response.read()
+        print content
 
     return render_template('index.html')
 
@@ -147,7 +151,7 @@ def settings():
         # Flash response
         response = { "success": True }
         flash("Successfully created user %s" % (username))
-        return redirect(url_for('settings.html', response=response))
+        return render_template('settings.html', response=response)
     
     elif request.method == 'POST' and add_type == 'pitaya':
         rp_name = \
