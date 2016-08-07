@@ -82,7 +82,7 @@ def login_page():
                 session['rp'] = rp
                 session['logged_in'] = True
                 session['logged_user'] = user.username
-                return redirect(url_for('index', user=user))
+                return redirect(url_for('index'))
         except AttributeError:
             error = 'You shall not pass'
 
@@ -111,9 +111,8 @@ def scpi_server():
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-        
+    
     avaliable_rp = {}
-
     # Get all avaliable Red Pitaya in subnet 192.168.1.X
     rp_sweep = \
         subprocess.Popen(
@@ -123,7 +122,6 @@ def index():
             stdin=subprocess.PIPE)
 
     stdout, stderr = rp_sweep.communicate()
-
     # Avaliable Red Pitaya are a combination of registred rp and found rp
     # with arp-scan
     for address in stdout.split('\n'):
@@ -135,15 +133,14 @@ def index():
                     RedPitaya.mac == split[1].upper()).first()
                 # Append pitaya to list if any
                 if rp:
-                    avaliable_rp[split[0]] = rp 
+                    avaliable_rp[split[0]] = rp.name 
             else:
                 continue
         except IndexError:
             continue
 
-    return render_template(
-        'index.html', 
-        avaliable_rp=avaliable_rp)
+    session['avaliable_pitaya'] = avaliable_rp
+    return render_template('index.html')
 
 @app.route('/logs', methods=['GET', 'POST'])
 def logs():
@@ -230,15 +227,13 @@ def connect_pitaya():
     # a bunch of crap. Like scpi server. Like a custom C script
     # that will pull on registers.
 
-    rp_name = request.form.get('button_pitaya', type=str)
-    rp_mac = constants.registred_red_pitaya.get(rp_name)
-    rp_temp_dir = "/tmp/pitaya1"
+    rp = request.form.get('button_pitaya', type=str)
 
     # Try and connect to the redpitaya
-    rp_ip = "192.168.1.100" # = discover(rp_mac)
+    rp_ip = rp[0]
+    print rp_ip
     response = os.system(
-        "echo root | sshfs -o "
-        "password_stdin root@192.168.1.239:/ /tmp/pitaya")
+        "echo root | sshfs -o password_stdin root@%s:/ /tmp/pitaya" % rp_ip)
 
     # Successfully connected rp
     if response == 0:

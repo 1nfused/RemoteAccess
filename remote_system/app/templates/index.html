@@ -48,9 +48,9 @@
 		<div class="left_block2">
 			<h2>Avaliable Red Pitaya</h2>
 			<hr class="custom_breaker">
-			{% for ip,pitaya in avaliable_rp.iteritems() %}
+			{% for ip, pitaya in session.avaliable_pitaya.iteritems() %}
 				<form action="/connect_pitaya", method="post">
-					<button name="button_pitaya" type="submit" class="btn bnt-primary col-xs-12" value="{{ ip }}">{{ pitaya.name }}</button>
+					<button name="button_pitaya" type="submit" class="btn bnt-primary col-xs-12" value="[{{ ip }}, {{ pitaya }}]">{{ pitaya }}</button>
 				</form>
 			{% endfor %}
 			<br>
