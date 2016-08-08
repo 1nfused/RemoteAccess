@@ -6,7 +6,7 @@
 {% block content %}
 <div class="content">
 	<div class="right_content">
-		{% if not error %}
+		{% if response != 'error' %}
 			{% with messages = get_flashed_messages() %}
 			  {% if messages %}
 			    {% for message in messages %}
@@ -37,12 +37,21 @@
 		<div class="left_block1">
 			<h2>Log</h2>
 			<hr class="custom_breaker">
-			<label>IP: </label><label name="rp_active_ip"></label><br>
-			<label>Name: </label><label name="rp_active_name"></label><br>
-			<label>Active: </label ><label name="rp_active_uptime"></label><br>
-			<label>Version: </label><label name="rp_active_version"></label><br>
-			<label>File system: </label><label name="rp_active_fs"></label><br>
-			<label>Fpga system: </label><label></label name="rp_active_fpga"><br>
+			{% if session.rp.connected %}
+				<label>IP: </label><label name="rp_active_ip">{{ session.rp.ip }}</label><br>
+				<label>Name: </label><label name="rp_active_name">{{ session.rp.name }}</label><br>
+				<label>Active: </label ><label name="rp_active_uptime">{{ session.rp.active }}</label><br>
+				<label>Version: </label><label name="rp_active_version">{{ session.rp.version }}</label><br>
+				<label>File system: </label><label name="rp_active_fs">{{ session.rp.fs }}</label><br>
+				<label>Fpga system: </label><label>{{ session.rp.fpga }}</label name="rp_active_fpga"><br>
+			{% else %}
+				<label>IP: </label><label name="rp_active_ip">--</label><br>
+				<label>Name: </label><label name="rp_active_name">--</label><br>
+				<label>Active: </label ><label name="rp_active_uptime">--</label><br>
+				<label>Version: </label><label name="rp_active_version">--</label><br>
+				<label>File system: </label><label name="rp_active_fs">--</label><br>
+				<label>Fpga system: </label><label name="rp_active_fpga">--</label><br>
+			{% endif %}
 		</div>
 
 		<div class="left_block2">
@@ -50,7 +59,7 @@
 			<hr class="custom_breaker">
 			{% for ip, pitaya in session.avaliable_pitaya.iteritems() %}
 				<form action="/connect_pitaya", method="post">
-					<button name="button_pitaya" type="submit" class="btn bnt-primary col-xs-12" value="[{{ ip }}, {{ pitaya }}]">{{ pitaya }}</button>
+					<button name="button_pitaya" type="submit" class="btn bnt-primary col-xs-12 connect" value="{{ ip }}:{{ pitaya }}" onclick="connectPitaya()">{{ pitaya }}</button>
 				</form>
 			{% endfor %}
 			<br>
@@ -58,3 +67,15 @@
 	</div>
 </div>
 {% endblock %}
+
+{% block script %}
+<script>
+	function connectPitaya() {
+	    var socket = io.connect(
+	    	'http://' + document.domain + ':' + location.port + '/test');
+	    socket.on('response', function(msg) {
+	    	console.log("GOT RESPONSE");
+	    });
+	}
+</script>
+{% endblock %}  

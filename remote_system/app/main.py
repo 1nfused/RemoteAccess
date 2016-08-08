@@ -13,7 +13,12 @@ from flask import Flask, render_template, \
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey, DateTime
 from sqlalchemy.orm import relationship
+from flask.ext.socketio import SocketIO, emit
+
 from requests.exceptions import HTTPError, ConnectionError
+from time import gmtime, strftime
+from threading import Thread
+from time import sleep
 
 import constants
 
@@ -21,6 +26,7 @@ app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+socketio = SocketIO(app)
 
 
 # User class
@@ -227,25 +233,41 @@ def connect_pitaya():
     # a bunch of crap. Like scpi server. Like a custom C script
     # that will pull on registers.
 
-    rp = request.form.get('button_pitaya', type=str)
-
-    # Try and connect to the redpitaya
+    rp = request.form.get('button_pitaya', type=str).split(':')
     rp_ip = rp[0]
-    print rp_ip
+    rp_name = rp[1].replace(' ', '')
+
+    rp_mount_point = '/tmp/%s' % rp_name
+
+    if not os.path.exists(rp_mount_point):
+        os.makedirs(rp_mount_point)
+
     response = os.system(
-        "echo root | sshfs -o password_stdin root@%s:/ /tmp/pitaya" % rp_ip)
+        "echo root | sshfs -o password_stdin root@%s:/ /tmp/%s" \
+        % (rp_ip, rp_name))
 
     # Successfully connected rp
     if response == 0:
+        flash("Successfully connected %s pitaya" % (rp_name))
+        file_path = "/tmp/%s/" % rp_name
+        file = open((file_path + "opt/redpitaya/version.txt"), "r")
+        print file.read()
+
         session.rp = {
             'connected': True,
-            'ip': rp_ip
+            'ip': rp_ip,
+            'name': rp_name,
+            'active': strftime("%d-%m-%Y %H:%M", gmtime()),
+            'version': '0.94',
+            'fs': 'Ubuntu',
+            'fpga': '0.94'
         }
-        flash("Successfully connected %s with MAC: %s" % (rp_name, rp_mac)) 
+
     else:
         flash("Could not connect Red Pitaya. Please check your connection.")
+        return render_template('index.html', response="error")
 
-    return render_template('index.html', error="error")
+    return render_template('index.html', response="error")
 
 
 @app.route('/logout')
@@ -254,6 +276,26 @@ def logout():
     session.pop('logged_user', None)
     return redirect(url_for('/'))
 
+@socketio.on('connect', namespace='/test')                        
+def test_message():
+    emit('my response', {'data': 'got it!'})
+
+@socketio.on('connect', namespace='/latency') 
+def latency():
+    # Ping selected host
+    rp_ping = \
+        subprocess.Popen(
+            ['ping', '-q', '-c', '1', '192.168.1.239'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            stdin=subprocess.PIPE)
+
+    stdout, stderr = rp_ping.communicate()
+    latency = \
+        stdout.split('\n')[4].split(' ')[3].split('/')[1]
+
+    emit('response', {'data': 'latency'})
+    print "HEYAH"
 
 @app.before_request
 def before_request():
