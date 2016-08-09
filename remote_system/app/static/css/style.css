@@ -296,6 +296,14 @@ body{
   padding-top: 10px;
 }
 
+.connect {
+  border: 1px solid green;
+}
+
+.disconnect {
+  border: 1px solid red;
+}
+
 /* IO PINS TABLE */
 .gpio_ext_1 {
   float: left;

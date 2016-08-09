@@ -58,8 +58,8 @@
 			<h2>Avaliable Red Pitaya</h2>
 			<hr class="custom_breaker">
 			{% for ip, pitaya in session.avaliable_pitaya.iteritems() %}
-				<form action="/connect_pitaya", method="post">
-					<button name="button_pitaya" type="submit" class="btn bnt-primary col-xs-12 connect" value="{{ ip }}:{{ pitaya }}" onclick="connectPitaya()">{{ pitaya }}</button>
+				<form action="/connect" method="post">
+					<button ng-click="changePitayaState($event)" ng-name="button_pitaya" type="submit" class="connect col-xs-12" data-value="{{ ip }}:{{ pitaya }}" onclick="connectPitaya(this)">{{ pitaya }}</button>
 				</form>
 			{% endfor %}
 			<br>
@@ -70,12 +70,16 @@
 
 {% block script %}
 <script>
-	function connectPitaya() {
+	function connectPitaya(object) {
+		/*
 	    var socket = io.connect(
 	    	'http://' + document.domain + ':' + location.port + '/test');
 	    socket.on('response', function(msg) {
 	    	console.log("GOT RESPONSE");
-	    });
+	    });*/
+
+	    // Change class of the button.
+	    $(object).toggleClass('connect').toggleClass('disconnect');
 	}
 </script>
 {% endblock %}  
