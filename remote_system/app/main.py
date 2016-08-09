@@ -267,7 +267,7 @@ def connect_pitaya():
         flash("Could not connect Red Pitaya. Please check your connection.")
         return render_template('index.html', response="error")
 
-    return render_template('index.html', response="error")
+    return render_template('index.html', response="response")
 
 
 @app.route('/logout')
