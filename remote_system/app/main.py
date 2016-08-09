@@ -117,7 +117,6 @@ def scpi_server():
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    
     avaliable_rp = {}
     # Get all avaliable Red Pitaya in subnet 192.168.1.X
     rp_sweep = \
@@ -226,14 +225,15 @@ def registers():
     return render_template('registers.html')
 
 # One of the main functions
-@app.route('/connect_pitaya', methods=['POST'])
-def connect_pitaya():
+@app.route('/connect', methods=['POST'])
+def connect_rp():
 
     # When the pitaya gets connected, we have to initiate
     # a bunch of crap. Like scpi server. Like a custom C script
     # that will pull on registers.
 
-    rp = request.form.get('button_pitaya', type=str).split(':')
+    rp = json.loads(
+        request.data.decode())['request'].split(':')
     rp_ip = rp[0]
     rp_name = rp[1].replace(' ', '')
 
@@ -246,13 +246,13 @@ def connect_pitaya():
         "echo root | sshfs -o password_stdin root@%s:/ /tmp/%s" \
         % (rp_ip, rp_name))
 
+    print "Heyy"
     # Successfully connected rp
     if response == 0:
         flash("Successfully connected %s pitaya" % (rp_name))
         file_path = "/tmp/%s/" % rp_name
         file = open((file_path + "opt/redpitaya/version.txt"), "r")
         print file.read()
-
         session.rp = {
             'connected': True,
             'ip': rp_ip,
@@ -262,13 +262,28 @@ def connect_pitaya():
             'fs': 'Ubuntu',
             'fpga': '0.94'
         }
-
+        return render_template('index.html', response="response")
     else:
-        flash("Could not connect Red Pitaya. Please check your connection.")
+        flash(
+            "Could not connect Red Pitaya. Please check your connection.")
+
         return render_template('index.html', response="error")
 
-    return render_template('index.html', response="response")
+@app.route('/disconnect', methods=['POST'])
+def disconnect_rp():
+    rp_name = session.get('rp').get('name')
+    response = os.system(
+        'echo root | fusermount -o password_stdin -u /tmp/%s' % \
+        session.get('rp').get('name'))
 
+    if response != 0:
+        flash("Unable to disconnect pitaya %s" % rp_name)
+        return render_template('index.html', error="error")
+
+    # Remove rp object from active session and render index template
+    session.pop('rp')
+    flash("Successfully disconnected Red Pitaya %s" % rp_name)
+    return render_template('index.html', response="response")
 
 @app.route('/logout')
 def logout():
@@ -307,5 +322,5 @@ def before_request():
 
 if __name__ == '__main__':
     # Global jinja functions
-    app.jinja_env.globals.update(connect_pitaya=connect_pitaya)
+    app.jinja_env.globals.update(connect_rp=connect_rp)
     app.run()
