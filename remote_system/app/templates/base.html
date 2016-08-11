@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="RemoteSystemApp">
+<html>
 	<head>
 		<title>Remote System</title>
 		<meta charset="utf-8">
@@ -15,17 +15,17 @@
 		<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 		<script src="{{ url_for('static', filename='js/socket.io.js') }}"></script>
 
-		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
+		<!--script src="{{ url_for('static', filename='js/angular.min.js') }}"></script>
 		<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-		<!--link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+		<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script-->
 		{% block extra_scripts %}{% endblock %}
 	</head>
 
-  	<body ng-controller="RemoteSystemController">
+  	<body>
   		<div class="wrapper">
 		    <div class="nav-side-menu">
 		    	<div class="brand">System Menu</div>
@@ -39,15 +39,15 @@
 		                </li>
 		                <li>
 		                	<a href="{{ url_for('gpio') }}">
-		                	<i class="fa glyphicon glyphicon-pushpin fa-lg"></i>I/O PINS</a>
+		                	<i class="fa fa-lg"></i>I/O PINS</a>
 		                </li>
 		                <li>
 		                	<a href="{{ url_for('registers') }}">
-		                	<i class="fa glyphicon glyphicon-flash fa-lg"></i>REGISTERS STATUS</a>
+		                	<i class="fa fa-lg"></i>REGISTERS STATUS</a>
 		                </li>
 		                <li>
 		                	<a href="{{ url_for('scpi_server') }}">
-		                	<i class="fa glyphicon glyphicon-send fa-lg"></i>SCPI SERVER</a>
+		                	<i class="fa fa-lg"></i>SCPI SERVER</a>
 		                </li>
 		                <li>
 		                  <a href="{{ url_for('settings', username=g.user) }}">
@@ -56,7 +56,7 @@
 		                </li>
 		                <li>
 		                  <a href="{{ url_for('logout') }}">
-		                  <i class="fa glyphicon glyphicon-log-out fa-lg"></i> LOGOUT
+		                  <i class="fa fa-lg"></i> LOGOUT
 		                  </a>
 		                </li>
 		                {% block extra_header %}{% endblock %}

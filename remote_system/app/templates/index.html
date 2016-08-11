@@ -31,7 +31,7 @@
 	</div>
 	<div class="left_content">
 		<div class="latency_block">
-			<h2>LATENCY N/A</h2>
+			<h2 id="latency" >LATENCY N/A</h2>
 		</div>
 		
 		<div class="left_block1">
@@ -58,8 +58,8 @@
 			<h2>Avaliable Red Pitaya</h2>
 			<hr class="custom_breaker">
 			{% for ip, pitaya in session.avaliable_pitaya.iteritems() %}
-				<form action="/connect" method="post">
-					<button ng-click="changePitayaState($event)" ng-name="button_pitaya" type="submit" class="connect col-xs-12" data-value="{{ ip }}:{{ pitaya }}" onclick="connectPitaya(this)">{{ pitaya }}</button>
+				<form method="post" action="/{{ response.action }}">
+					<button href="{{ url_for('connect') }}" onclick="changePitayaState(this)" name="button_pitaya" type="submit" class="{{ session.rp.action }} col-xs-12" value="{{ ip }}:{{ pitaya }}">{{ pitaya }}</button>
 				</form>
 			{% endfor %}
 			<br>
@@ -70,16 +70,5 @@
 
 {% block script %}
 <script>
-	function connectPitaya(object) {
-		/*
-	    var socket = io.connect(
-	    	'http://' + document.domain + ':' + location.port + '/test');
-	    socket.on('response', function(msg) {
-	    	console.log("GOT RESPONSE");
-	    });*/
-
-	    // Change class of the button.
-	    $(object).toggleClass('connect').toggleClass('disconnect');
-	}
 </script>
 {% endblock %}  

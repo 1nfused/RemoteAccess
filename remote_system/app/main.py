@@ -18,6 +18,7 @@ from flask.ext.socketio import SocketIO, emit
 from requests.exceptions import HTTPError, ConnectionError
 from time import gmtime, strftime
 from threading import Thread
+import multiprocessing
 from time import sleep
 
 import constants
@@ -83,11 +84,13 @@ def login_page():
                 # Sesion
                 rp = { 
                     'connected': False,
-                    'ip': None
+                    'ip': None,
+                    'action': 'connect'
                 }
                 session['rp'] = rp
                 session['logged_in'] = True
                 session['logged_user'] = user.username
+                session['first_log'] = False;
                 return redirect(url_for('index'))
         except AttributeError:
             error = 'You shall not pass'
@@ -145,7 +148,7 @@ def index():
             continue
 
     session['avaliable_pitaya'] = avaliable_rp
-    return render_template('index.html')
+    return render_template('index.html', response={'action': 'connect'})
 
 @app.route('/logs', methods=['GET', 'POST'])
 def logs():
@@ -226,17 +229,16 @@ def registers():
 
 # One of the main functions
 @app.route('/connect', methods=['POST'])
-def connect_rp():
+def connect():
 
     # When the pitaya gets connected, we have to initiate
     # a bunch of crap. Like scpi server. Like a custom C script
     # that will pull on registers.
-
-    rp = json.loads(
-        request.data.decode())['request'].split(':')
+    print "CONNECTING PITAYA"
+    rp = request.form.get('button_pitaya').split(':')
     rp_ip = rp[0]
     rp_name = rp[1].replace(' ', '')
-
+    print rp_ip
     rp_mount_point = '/tmp/%s' % rp_name
 
     if not os.path.exists(rp_mount_point):
@@ -252,25 +254,27 @@ def connect_rp():
         flash("Successfully connected %s pitaya" % (rp_name))
         file_path = "/tmp/%s/" % rp_name
         file = open((file_path + "opt/redpitaya/version.txt"), "r")
-        print file.read()
-        session.rp = {
+        session['rp'] = {
             'connected': True,
             'ip': rp_ip,
             'name': rp_name,
             'active': strftime("%d-%m-%Y %H:%M", gmtime()),
             'version': '0.94',
             'fs': 'Ubuntu',
-            'fpga': '0.94'
+            'fpga': '0.94',
+            'action': 'disconnect'
         }
-        return render_template('index.html', response="response")
+        return render_template(
+            'index.html', response={'action': 'disconnect'})
     else:
         flash(
             "Could not connect Red Pitaya. Please check your connection.")
-
-        return render_template('index.html', response="error")
+        return render_template(
+            'index.html', response={'action': 'connect'})
 
 @app.route('/disconnect', methods=['POST'])
 def disconnect_rp():
+    print session
     rp_name = session.get('rp').get('name')
     response = os.system(
         'echo root | fusermount -o password_stdin -u /tmp/%s' % \
@@ -278,12 +282,25 @@ def disconnect_rp():
 
     if response != 0:
         flash("Unable to disconnect pitaya %s" % rp_name)
-        return render_template('index.html', error="error")
+        return render_template(
+            'index.html', 
+            response={'action': 'connect'}, error="error")
 
     # Remove rp object from active session and render index template
-    session.pop('rp')
+    session['rp'] = {
+        'connected': False,
+        'ip': '',
+        'name': '',
+        'active': '',
+        'version': '',
+        'fs': '',
+        'fpga': '',
+        'action': 'connect'
+    }
+
     flash("Successfully disconnected Red Pitaya %s" % rp_name)
-    return render_template('index.html', response="response")
+    return render_template(
+        'index.html', response={'action': 'connect'})
 
 @app.route('/logout')
 def logout():
@@ -291,26 +308,44 @@ def logout():
     session.pop('logged_user', None)
     return redirect(url_for('/'))
 
-@socketio.on('connect', namespace='/test')                        
-def test_message():
-    emit('my response', {'data': 'got it!'})
-
 @socketio.on('connect', namespace='/latency') 
 def latency():
-    # Ping selected host
-    rp_ping = \
-        subprocess.Popen(
-            ['ping', '-q', '-c', '1', '192.168.1.239'],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            stdin=subprocess.PIPE)
+    emit('response', "HEYYY")
+    '''
+    queue = multiprocessing.Queue()
+    thread_ = \
+        Thread(
+            target=latency_thread,
+            name="latency_tread",
+            args=[queue])
 
-    stdout, stderr = rp_ping.communicate()
-    latency = \
-        stdout.split('\n')[4].split(' ')[3].split('/')[1]
+    thread_.start()
+    thread_.join()
+    ret_val = queue.get()
 
-    emit('response', {'data': 'latency'})
-    print "HEYAH"
+    emit('response', ret_val)
+    print ret_val
+
+def latency_thread(queue):
+    latency = '--'
+    try:
+        rp_ping = \
+            subprocess.Popen(
+                ['ping', '-q', '-c', '1', '192.168.1.239'],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                stdin=subprocess.PIPE)
+
+        stdout, stderr = rp_ping.communicate()
+        print stdout
+        latency = \
+            stdout.split('\n')[4].split(' ')[3].split('/')[1]
+    except Exception:
+        print "EXCEPTION"
+
+    # Put latency object in que    
+    queue.put(latency)
+    '''
 
 @app.before_request
 def before_request():
@@ -322,5 +357,5 @@ def before_request():
 
 if __name__ == '__main__':
     # Global jinja functions
-    app.jinja_env.globals.update(connect_rp=connect_rp)
+    # app.jinja_env.globals.update(connect=connect)
     app.run()
