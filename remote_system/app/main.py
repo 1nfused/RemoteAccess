@@ -91,7 +91,7 @@ def login_page():
                 session['logged_in'] = True
                 session['logged_user'] = user.username
                 session['first_log'] = False;
-                return redirect(url_for('index'))
+                return render_template('base.html', error=error)
         except AttributeError:
             error = 'You shall not pass'
 
@@ -120,6 +120,8 @@ def scpi_server():
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
+    print "HELLO MAN"
+    '''
     avaliable_rp = {}
     # Get all avaliable Red Pitaya in subnet 192.168.1.X
     rp_sweep = \
@@ -286,7 +288,6 @@ def disconnect_rp():
             'index.html', 
             response={'action': 'connect'}, error="error")
 
-    # Remove rp object from active session and render index template
     session['rp'] = {
         'connected': False,
         'ip': '',
@@ -311,7 +312,7 @@ def logout():
 @socketio.on('connect', namespace='/latency') 
 def latency():
     emit('response', "HEYYY")
-    '''
+    
     queue = multiprocessing.Queue()
     thread_ = \
         Thread(
