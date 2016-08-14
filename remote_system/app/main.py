@@ -317,11 +317,9 @@ def logout():
     session.pop('logged_user', None)
     return redirect(url_for('/'))
 
-'''
-@socketio.on('connect', namespace='/latency') 
+
+@app.route('/latency')
 def latency():
-    emit('response', "HEYYY")
-    
     queue = multiprocessing.Queue()
     thread_ = \
         Thread(
@@ -331,10 +329,11 @@ def latency():
 
     thread_.start()
     thread_.join()
-    ret_val = queue.get()
-
-    emit('response', ret_val)
-    print ret_val
+    response = {
+        'success': True,
+        'data': str(queue.get())[:3] + 'ms'
+    }
+    return jsonify(response), 200
 
 def latency_thread(queue):
     latency = '--'
@@ -355,7 +354,6 @@ def latency_thread(queue):
 
     # Put latency object in que    
     queue.put(latency)
-    '''
 
 @app.before_request
 def before_request():
