@@ -1,53 +1,26 @@
-{% extends "base.html" %}
-{% block extra_scripts %}{% endblock %}
-{% block extra_header %}{% endblock %}
-
-{% block content %}
-<div class="content settings_content">
-	{% if not error %}
-		{% with messages = get_flashed_messages() %}
-		  {% if messages %}
-		    {% for message in messages %}
-		      <div class="alert alert-success alert-dismissible" role="alert">
-			      <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
-			      {{ message }}
-		      </div>
-		    {% endfor %}
-		  {% endif %}
-		{% endwith %}
-	{% else %}
-		{% with messages = get_flashed_messages() %}
-		  {% if messages %}
-		    {% for message in messages %}
-		      <div class="alert alert-danger alert-dismissible" role="alert">{{ message }}
-		      	<button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
-		      </div>
-		    {% endfor %}
-		  {% endif %}
-		{% endwith %}
-	{% endif %}
+<div class="content settings_content" ng-controller="settingsController">
 	<div class="settings_header">
 		<h2><strong>ADD REDPITAYA</strong></h2>
 	</div>
 	<hr class="custom_breaker">
 
 	<div class="form_data">
-		<form id="add_pitaya" action="" class="form-horizontal" method="post">
+		<form id="add_pitaya" class="form-horizontal">
 			<div class="form-group">
 			    <label for="username" class="col-xs-4 col-sm-2 control-label">Name</label>
 			    <div class="col-xs-8 col-sm-8">
-			      <input placeholder="Name of your red pitaya" class="form-control" id="name" name="rp_name" type="username">
+			      <input ng-model="rp.name" placeholder="Name of your red pitaya" class="form-control" id="name" name="rp_name" type="username">
 			    </div>
 		  	</div>
 		  	<div class="form-group">
 			    <label for="username" class="col-xs-4 col-sm-2 control-label">MAC</label>
 			    <div class="col-xs-8 col-sm-8">
-			      <input placeholder="00:11:22:33:44:55" class="form-control" id="mac" name="rp_mac" type="username">
+			      <input ng-model="rp.mac" placeholder="00:11:22:33:44:55" class="form-control" id="mac" name="rp_mac" type="username">
 			    </div>
 		  	</div>
 
 		  	<div class="col-sm-offset-2">
-		      <button name="settings_add" value="pitaya" href="{{ url_for('settings') }}" class="custom_button" type="submit">Add Pitaya</button>
+		      <button ng-click="addPitaya(rp)" name="settings_add" value="pitaya" class="custom_button" type="submit">Add Pitaya</button>
 		    </div>
 		</form>
 
@@ -56,36 +29,35 @@
 		</div>
 		<hr class="custom_breaker">
 
-	  	<form action="" class="form-horizontal" method="post">
+	  	<form class="form-horizontal">
 			<div class="form-group">
 			    <label for="name" class="col-xs-4 col-sm-2 control-label">Name</label>
 			    <div class="col-xs-8 col-sm-8">
-			      <input class="form-control" id="name" name="name" type="name">
+			      <input placeholder="John" ng-model="user.name" class="form-control" id="name" name="name" type="name">
 			    </div>
 		  	</div>
 		  	<div class="form-group">
 			    <label for="surname" class="col-xs-4 col-sm-2 control-label">Surname</label>
 			    <div class="col-xs-8 col-sm-8">
-			      <input class="form-control" id="surname" name="surname" type="surname">
+			      <input placeholder="Smith" ng-model="user.surname" class="form-control" id="surname" name="surname" type="surname">
 			    </div>
 		  	</div>
 		  	<div class="form-group">
 			    <label for="username" class="col-xs-4 col-sm-2 control-label">Username</label>
 			    <div class="col-xs-10 col-sm-8">
-			      <input class="form-control" id="username" name="username" type="username">
+			      <input placeholder="username" ng-model="user.username" class="form-control" id="username" name="username" type="username">
 			    </div>
 		  	</div>
 		  	<div class="form-group">
 			    <label for="email" class="col-xs-4 col-sm-2 control-label">E-mail</label>
 			    <div class="col-xs-8 col-sm-8">
-			      <input class="form-control" id="email" name="email" type="email">
+			      <input placeholder="someone@somewhere.com" ng-model="user.email" class="form-control" id="email" name="email" type="email">
 			    </div>
 		  	</div>
 
 		  	<div class="col-sm-offset-2">
-		      <button name="settings_add" value="user" href="{{ url_for('settings') }}" class="custom_button" type="submit">Add user</button>
+		      <button name="settings_add" value="user" class="custom_button" ng-click="addUser(user)">Add user</button>
 		    </div>
 		</form>
 	</div>
 </div>
-{% endblock %}

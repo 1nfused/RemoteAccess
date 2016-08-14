@@ -41,7 +41,7 @@ class User(db.Model):
     password = db.Column(db.String, default="root")
     role = db.Column(db.Boolean, default=False)
 
-    def __init__(self, username, password, name, email, group_id):
+    def __init__(self, username, password, name, email):
         self.username = username
         self.password = password
         self.name = name
@@ -56,7 +56,7 @@ class RedPitaya(db.Model):
     name = db.Column(db.String, nullable=False)
     mac = db.Column(db.String, nullable=False)
 
-    def __init__(self, name, mac, group_id):
+    def __init__(self, name, mac):
         self.name = name
         self.mac = mac
 
@@ -163,25 +163,33 @@ def logs():
 
 @app.route('/settings', methods=['POST', 'GET'])
 def settings():
+    post_request = json.loads(request.data.decode())
+
     response = {
-        "success": True
+        'success': False,
+        'msg': ''
     }
 
-    add_type = request.form.get('settings_add')
+    add_type = post_request.get('type')
+    
+    print post_request
 
-    if request.method == 'POST' and add_type == 'user':
-        username = request.form.get('username', type=str)
+    if add_type == 'user':
+        username = post_request.get('data')['username']
         if User.query.filter(User.username == username).first():
-            flash("User with username %s already exists" % username)
-            return render_template('settings.html', error="error")
+            print "USERNAME exists"
+            response['msg'] = \
+                "User with username %s already exists" % username
+            return jsonify(response), 504
 
-        name = request.form.get('name', type=str)
-        surname = request.form.get('surname', type=str)
-        email = request.form.get('email', type=str)
+        name = post_request.get('data')['name']
+        surname = post_request.get('data')['surname']
+        email = post_request.get('data')['email']
 
         if not name or not surname or not email:
-            flash("All fields are required!")
-            return render_template('settings.html', error="error")
+            print "ALL FIELDS"
+            response['msg'] = "All fields are required!"
+            return jsonify(response), 504
 
         # Create user
         user = User(username, "root", name, email)
@@ -189,34 +197,38 @@ def settings():
         db.session.commit()
         
         # Flash response
-        response = { "success": True }
-        flash("Successfully created user %s" % (username))
-        return render_template('settings.html', response=response)
+        response = { 
+            'success': True,
+            'msg': 'Successfully created user %s' % (username) }
+
+        return jsonify(response), 200
     
-    elif request.method == 'POST' and add_type == 'pitaya':
+    elif add_type == 'pitaya':
         rp_name = \
-            request.form.get("rp_name", type=str)
+            post_request.get('data')['rp_name']
         rp_mac = \
-            request.form.get("rp_mac", type=str)
+            post_request.get('data')['rp_mac']
 
         # Check if MAC is correct right away
         if len(rp_mac) != 17:
-            flash("Invalid MAC address!")
-            return render_template('settings.html', error="error")
+            response['msg'] = "Invalid MAC address!"
+            return jsonify(response), 504
 
         if not rp_name or not rp_mac:
-            flash("All fields are require!")
-            return render_template('settings.html', error="error")
+            response['msg'] = "All fields are require!"
+            return jsonify(response), 504
 
         if RedPitaya.query.filter(RedPitaya.mac == rp_mac).first():
-            flash("RedPitaya already exists!")
-            return render_template('settings.html', error="error")
+            response['msg'] = "RedPitaya already exists!"
+            return jsonify(response), 504
         else:
             rp = RedPitaya(rp_name, rp_mac)
             db.session.add(rp)
             db.session.commit()
 
-        flash("Successfully created Red Pitaya %s" % rp_name)
+        response = {
+            'success': True,
+            'msg': "Successfully created Red Pitaya %s" % rp_name }
     return jsonify(response), 200
 
 # IDEA FOR registers

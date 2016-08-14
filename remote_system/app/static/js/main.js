@@ -1,6 +1,24 @@
 'use strict';
 var app = angular.module('RemoteSystemApp', ['ngRoute']);
 
+app.config(
+	function($routeProvider) {
+		$routeProvider.
+	    when("/index", {
+	        templateUrl: "/static/templates/main.html"
+	    }).
+	    when("/gpio", {
+	    	templateUrl: "/static/templates/io_pins.html"
+	    }).
+	    when("/settings", {
+	    	templateUrl: "/static/templates/settings.html"
+	    }).
+	    otherwise({
+	    	redirectTo : "/index"
+	    });
+	}
+);
+
 app.factory('connectedPitaya', function($rootScope) {
 	console.log("CONNECTED PITAYA");
 	var shared_rp = {};
@@ -36,21 +54,6 @@ app.factory('connectedPitaya', function($rootScope) {
 
 	return shared_rp;
 });
-
-app.config(
-	function($routeProvider) {
-		$routeProvider.
-	    when("/index", {
-	        templateUrl: "/static/templates/main.html"
-	    }).
-	    when("/gpio", {
-	    	templateUrl: "/static/templates/io_pins.html"
-	    }).
-	    otherwise({
-	    	redirectTo : "/index"
-	    });
-	}
-);
 
 app.config( 
 	function($interpolateProvider) {
@@ -121,7 +124,6 @@ app.controller('mainPageController', [
 		$scope.poolLatency = function latency() {
 	        $http.get('/latency')
 	        	.success(function(response) {
-	        		console.log(response.data);
 	            	$scope.latency = response.data;
 	            	connectedPitaya.latency = $scope.latency;
 	            	var promise = $timeout(latency, 1000);
@@ -138,5 +140,30 @@ app.controller('mainPageController', [
 			$scope.connected = connectedPitaya.rp.connected;
 			$scope.latency = connectedPitaya.latency;
 		});
+	}
+]);
+
+app.controller('settingsController', [
+	'$scope', '$http', '$timeout', '$rootScope', 'connectedPitaya',
+	function($scope, $http, $timeout, $rootScope, connectedPitaya) {
+
+		var settings_url = $scope.base_url + '/settings';
+
+		$scope.addUser = function(user) {
+			$http.post(
+				settings_url, 
+				{ 'data': user, 'type': 'user' })
+					.success(function(response) {
+						console.log("ADDED USER");
+					});
+		};
+
+		$scope.addPitaya = function(rp) {
+			$http.post(settings_url, {'data': rp, 'type': 'pitaya'})
+				.success(function(response) {
+					console.log("ADDED PITAYA");
+				});
+		}
+
 	}
 ]);
