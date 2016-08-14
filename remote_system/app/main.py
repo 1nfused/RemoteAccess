@@ -241,12 +241,9 @@ def connect():
     # When the pitaya gets connected, we have to initiate
     # a bunch of crap. Like scpi server. Like a custom C script
     # that will pull on registers.
-    print "CONNECTING PITAYA"
     rp = json.loads(request.data.decode())
     rp_ip = rp['ip']
     rp_name = rp['name'].replace(' ', '')
-    print "HEY"
-    print rp_name
     rp_mount_point = '/tmp/%s' % rp_name
 
     if not os.path.exists(rp_mount_point):

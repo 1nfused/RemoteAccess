@@ -13,26 +13,24 @@
 		</div>
 		
 		<div class="left_block1">
-			<h2>Log</h2>
-			<hr class="custom_breaker">
 			<table class="connection_data_table">
 				<tr>
 					<td id="ip_data" name="rp_active_ip" ng-model="rp_ip"><strong>{$ rp.ip $}</strong></td>
 				</tr>
 				<tr>
-					<td name="rp_active_name" ng-model="rp_name">{$ rp.name $}</td>
+					<td class="second_stats" name="rp_active_name" ng-model="rp_name"><strong>NAME</strong> {$ rp.name $}</td>
 				</tr>
 				<tr>
-					<td name="rp_active_active" ng-model="rp_ip">{$ rp.active $}</td>
+					<td class="second_stats" name="rp_active_active" ng-model="rp_ip"><strong>ACTIVE</strong> {$ rp.active $}</td>
 				</tr>
 				<tr>
-					<td name="rp_active_version" ng-model="rp_version">{$ rp.version $}</td>
+					<td class="second_stats" name="rp_active_version" ng-model="rp_version"><strong>VERSION</strong> {$ rp.version $}</td>
 				</tr>
 				<tr>
-					<td name="rp_active_fs" ng-model="rp_fs">{$ rp.fs $}</td>
+					<td class="second_stats" name="rp_active_fs" ng-model="rp_fs"><strong>FILESYSTEM</strong> {$ rp.fs $}</td>
 				</tr>
 				<tr>
-					<td name="rp_active_fpga" ng-model="rp_fpga">{$ rp.fpga $}</td>
+					<td class="second_stats" name="rp_active_fpga" ng-model="rp_fpga"><strong>FPGA VERSION</strong> {$ rp.fpga $}</td>
 				</tr>
         	</table>
         	<br>

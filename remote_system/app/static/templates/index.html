@@ -39,8 +39,8 @@
       <div class="status_page">
         <table class="status_table">
           <tr>
-              <td ng-model="rp_connection_status">STATUS: <strong style="color: "></strong></td>
-              <td>IP: <strong style="color: red">{{ session.rp.ip }}</strong></td>
+              <td ng-hide="{$ connected $}">STATUS: <strong style="color: {$ connected ? 'green' : 'red'; $}">{$ connected ? 'CONNECTED' : 'DISCONNECTED' $}</strong></td>
+              <td ng-hide="{$ connected $}">IP: <strong style="color: {$ connected ? 'green' : 'red'; $}">{$ connected ? rp.ip : 'NONE' $}</strong></td>
             <td>Logged as: <strong>{{ session.logged_user }}</strong></td>
           </tr>
         </table>

@@ -339,7 +339,6 @@ body{
 }
 
 .connection_data_table {
-  text-align: center;
   border: 1px solid white;
   height: 200px;
   width: 100%;
@@ -349,10 +348,13 @@ body{
   font-size: 12px;
   border: 1px solid white;
   color: white;
+  text-align: left;
+  padding: 3px 3px 3px 3px;
 }
 
 #ip_data {
-  font-size: 25px;
+  font-size: 22px;
+  text-align: center;
 }
 
 .left_content {
@@ -364,17 +366,14 @@ body{
   padding: 10px 10px 10px 10px; 
 }
 
-.latency_block{
-  height: 10%;
-  background-color: green;
-  padding: 5px 5px 5px 5px;
-}
-
-.latency_block {
-  font-size: 30px;
+.latency_block h2{
   text-align: center;
   padding-top: 10px;
   margin-bottom: 10px;
+  height: 10%;
+  padding: 5px 5px 5px 5px;
+  color: white;
+  font-size: 30px;
 }
 
 .connect {
