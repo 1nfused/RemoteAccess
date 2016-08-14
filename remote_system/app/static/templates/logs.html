@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block extra_scripts %}{% endblock %}
+{% block extra_header %}{% endblock %}
+
+{% block content %}
+<div class="content content_registers">
+	<ul class="nav nav-tabs">
+	  <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
+	  <li><a data-toggle="tab" href="#menu1">Menu 1</a></li>
+	  <li><a data-toggle="tab" href="#menu2">Menu 2</a></li>
+	</ul>
+
+	<div class="tab-content">
+	  <div id="home" class="tab-pane fade in active">
+	    <h3>GENERAL SYSTEM LOG</h3>
+	    <p>This is the general system log located in /var/log/</p>
+	  </div>
+	  <div id="menu1" class="tab-pane fade">
+	    <h3>NGINX LOG</h3>
+	    <p>This is the main nginx log</p>
+	  </div>
+	  <div id="menu2" class="tab-pane fade">
+	    <h3>SCPI LOG</h3>
+	    <p>This is the scpi log</p>
+	  </div>
+	</div>
+</div>
+{% endblock %}

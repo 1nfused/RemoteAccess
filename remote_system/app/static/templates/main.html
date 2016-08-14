@@ -1,0 +1,52 @@
+<div class="content" ng-controller="mainPageController">
+	<div class="right_content">
+		<!--div class="alert alert-success alert-dismissible" role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+		</div>
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+		</div -->
+	</div>
+	<div class="left_content">
+		<div class="latency_block">
+			<h2 id="latency" >LATENCY N/A</h2>
+		</div>
+		
+		<div class="left_block1">
+			<h2>Log</h2>
+			<hr class="custom_breaker">
+			<table class="connection_data_table">
+				<tr>
+					<td id="ip_data" name="rp_active_ip" ng-model="rp_ip"><strong>{$ rp.ip $}</strong></td>
+				</tr>
+				<tr>
+					<td name="rp_active_name" ng-model="rp_name">{$ rp.name $}</td>
+				</tr>
+				<tr>
+					<td name="rp_active_active" ng-model="rp_ip">{$ rp.active $}</td>
+				</tr>
+				<tr>
+					<td name="rp_active_version" ng-model="rp_version">{$ rp.version $}</td>
+				</tr>
+				<tr>
+					<td name="rp_active_fs" ng-model="rp_fs">{$ rp.fs $}</td>
+				</tr>
+				<tr>
+					<td name="rp_active_fpga" ng-model="rp_fpga">{$ rp.fpga $}</td>
+				</tr>
+        	</table>
+        	<br>
+		</div>
+
+		<div class="left_block2">
+			<h2>Avaliable Red Pitaya</h2>
+			<hr class="custom_breaker">
+			<div class="left_block2" ng-repeat="(ip, name) in avaliable_pitaya">	
+				<form>
+					<button name="button_pitaya" class="col-xs-12" ng-init="index=0; classes=['connect', 'disconnect']" ng-click="changePitayaState(classes[index % classes.length], ip, name); index = index + 1" ng-class="classes[index]"value="{{ ip }}:{{ name }}">{$ name $}</button>
+					<hr class="custom_breaker">
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

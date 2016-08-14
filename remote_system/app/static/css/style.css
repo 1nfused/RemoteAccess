@@ -287,7 +287,7 @@ body{
 
 .custom_breaker{
   font-size: 20px;
-  margin: 0px 0px 20px 0px !important;
+  margin: 0px 0px 10px 0px !important;
 }
 
 /* STATUS BAR */
@@ -301,19 +301,18 @@ body{
 
 .status_table {
       border-collapse: collapse;
-      width: 50%;
+      width: 60%;
       height: 100%;
       float: right;
   }
  
-.status_table th, td {
-    font-family: FontAwesome;
+.status_table th, .status_table td {
     padding: 4px;
     width: 120px;
     border-left: 1px solid white; /* Color of the chosen background */
     text-align: center;
     color: white;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .form_data label{
@@ -328,23 +327,41 @@ body{
 }
 
 .left_block2 {
-  height: 33%;
+  height: relative;
   margin-top: 5%;
-  background-color: white;
-  padding: 5px 5px 5px 5px;
+  padding: 5px 5px 10px 5px;
+  margin-bottom: 5px;
 }
 
 .left_block1 {
   height: 55%;
-  background-color: white;
   padding: 5px 5px 5px 5px;
 }
 
+.connection_data_table {
+  text-align: center;
+  border: 1px solid white;
+  height: 200px;
+  width: 100%;
+}
+
+.connection_data_table th, .connection_data_table td{
+  font-size: 12px;
+  border: 1px solid white;
+  color: white;
+}
+
+#ip_data {
+  font-size: 25px;
+}
+
 .left_content {
+  font-family: Arial;
+  background-color: #2471A3;
   width: 30%;
   float: right;
   height: 100%;
-  padding-left: 10px; 
+  padding: 10px 10px 10px 10px; 
 }
 
 .latency_block{
@@ -353,11 +370,11 @@ body{
   padding: 5px 5px 5px 5px;
 }
 
-.latency_block h2{
+.latency_block {
   font-size: 30px;
   text-align: center;
-  vertical-align: middle;
   padding-top: 10px;
+  margin-bottom: 10px;
 }
 
 .connect {

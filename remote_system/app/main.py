@@ -8,7 +8,7 @@ import urllib2
 import subprocess
 
 from flask import Flask, render_template, \
-    request, url_for, redirect, session, flash, g
+    request, url_for, redirect, session, flash, g, jsonify
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey, DateTime
@@ -23,7 +23,7 @@ from time import sleep
 
 import constants
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='static/templates')
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -91,7 +91,7 @@ def login_page():
                 session['logged_in'] = True
                 session['logged_user'] = user.username
                 session['first_log'] = False;
-                return render_template('base.html', error=error)
+                return render_template('index.html', error=error)
         except AttributeError:
             error = 'You shall not pass'
 
@@ -120,8 +120,6 @@ def scpi_server():
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    print "HELLO MAN"
-    '''
     avaliable_rp = {}
     # Get all avaliable Red Pitaya in subnet 192.168.1.X
     rp_sweep = \
@@ -150,11 +148,18 @@ def index():
             continue
 
     session['avaliable_pitaya'] = avaliable_rp
-    return render_template('index.html', response={'action': 'connect'})
+    print avaliable_rp
+    response = {
+        'success': True,
+        'data': avaliable_rp
+    }
 
+    return jsonify(response), 200
+'''
 @app.route('/logs', methods=['GET', 'POST'])
 def logs():
     return render_template('logs.html')
+'''
 
 @app.route('/settings', methods=['POST', 'GET'])
 def settings():
@@ -212,7 +217,7 @@ def settings():
             db.session.commit()
 
         flash("Successfully created Red Pitaya %s" % rp_name)
-    return render_template('settings.html', response=response)
+    return jsonify(response), 200
 
 # IDEA FOR registers
 # When the redpitaya gets mounted, execute a C script or something, that will
@@ -221,13 +226,13 @@ def settings():
 @app.route('/gpio', methods=['GET'])
 def gpio():
     # Read GPIO file from mounted RP
-    return render_template('io_pins.html')
+    pass
 
 
 @app.route('/registers', methods=['POST', 'GET'])
 def registers():
     # Read registers file from mounted RP
-    return render_template('registers.html')
+    pass
 
 # One of the main functions
 @app.route('/connect', methods=['POST'])
@@ -237,10 +242,11 @@ def connect():
     # a bunch of crap. Like scpi server. Like a custom C script
     # that will pull on registers.
     print "CONNECTING PITAYA"
-    rp = request.form.get('button_pitaya').split(':')
-    rp_ip = rp[0]
-    rp_name = rp[1].replace(' ', '')
-    print rp_ip
+    rp = json.loads(request.data.decode())
+    rp_ip = rp['ip']
+    rp_name = rp['name'].replace(' ', '')
+    print "HEY"
+    print rp_name
     rp_mount_point = '/tmp/%s' % rp_name
 
     if not os.path.exists(rp_mount_point):
@@ -250,10 +256,9 @@ def connect():
         "echo root | sshfs -o password_stdin root@%s:/ /tmp/%s" \
         % (rp_ip, rp_name))
 
-    print "Heyy"
     # Successfully connected rp
     if response == 0:
-        flash("Successfully connected %s pitaya" % (rp_name))
+        msg = "Successfully connected %s pitaya" % (rp_name)
         file_path = "/tmp/%s/" % rp_name
         file = open((file_path + "opt/redpitaya/version.txt"), "r")
         session['rp'] = {
@@ -266,27 +271,33 @@ def connect():
             'fpga': '0.94',
             'action': 'disconnect'
         }
-        return render_template(
-            'index.html', response={'action': 'disconnect'})
+        response = {
+            'success': True,
+            'data': {
+                'msg': msg,
+                'rp': session['rp']}
+        }
+        return jsonify(response), 200
     else:
-        flash(
-            "Could not connect Red Pitaya. Please check your connection.")
-        return render_template(
-            'index.html', response={'action': 'connect'})
+        error = "Could not connect Red Pitaya. Please check your connection."
+        return jsonify(
+            response={
+                'success': False, 
+                'data' : { 'error': error }}), 504
 
 @app.route('/disconnect', methods=['POST'])
 def disconnect_rp():
-    print session
-    rp_name = session.get('rp').get('name')
+    print "DISCONECTING PITAYA"
+    rp = json.loads(request.data.decode())
+    rp_name = rp['name'].replace(' ', '')
+
     response = os.system(
         'echo root | fusermount -o password_stdin -u /tmp/%s' % \
-        session.get('rp').get('name'))
+        rp_name)
 
     if response != 0:
         flash("Unable to disconnect pitaya %s" % rp_name)
-        return render_template(
-            'index.html', 
-            response={'action': 'connect'}, error="error")
+        pass
 
     session['rp'] = {
         'connected': False,
@@ -309,6 +320,7 @@ def logout():
     session.pop('logged_user', None)
     return redirect(url_for('/'))
 
+'''
 @socketio.on('connect', namespace='/latency') 
 def latency():
     emit('response', "HEYYY")
