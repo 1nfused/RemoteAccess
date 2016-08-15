@@ -13,6 +13,9 @@ app.config(
 	    when("/settings", {
 	    	templateUrl: "/static/templates/settings.html"
 	    }).
+	    when("/scpi_server", {
+	    	templateUrl: "/static/templates/scpi_server.html"
+	    }).
 	    otherwise({
 	    	redirectTo : "/index"
 	    });

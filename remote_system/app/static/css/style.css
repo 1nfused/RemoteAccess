@@ -196,12 +196,9 @@ body{
     background-color: #2e353d; /* Green */
     border: none;
     color: white;
-    padding: 10px 20px;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
     font-size: 12px;
-    margin: 4px 2px;
     cursor: pointer;
 }
 
@@ -417,6 +414,14 @@ body{
     background-color: #4CAF50;
     color: white;
     text-align: center;
+}
+
+.scpi_script textarea {
+  max-width: 100%; 
+}
+
+.text_area_buttons {
+  align: right;
 }
 
 
