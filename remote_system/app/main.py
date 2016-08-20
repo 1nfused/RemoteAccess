@@ -121,6 +121,8 @@ def scpi_server():
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     avaliable_rp = {}
+    avaliable_apps = {}
+
     # Get all avaliable Red Pitaya in subnet 192.168.1.X
     rp_sweep = \
         subprocess.Popen(
@@ -148,13 +150,15 @@ def index():
             continue
 
     session['avaliable_pitaya'] = avaliable_rp
-    print avaliable_rp
     response = {
         'success': True,
-        'data': avaliable_rp
+        'data': {
+            'avaliable_rp': avaliable_rp, 
+            'avaliable_apps': avaliable_apps }
     }
 
     return jsonify(response), 200
+
 '''
 @app.route('/logs', methods=['GET', 'POST'])
 def logs():
@@ -250,13 +254,13 @@ def registers():
 @app.route('/connect', methods=['POST'])
 def connect():
 
-    # When the pitaya gets connected, we have to initiate
-    # a bunch of crap. Like scpi server. Like a custom C script
-    # that will pull on registers.
     rp = json.loads(request.data.decode())
     rp_ip = rp['ip']
     rp_name = rp['name'].replace(' ', '')
-    rp_mount_point = '/tmp/%s' % rp_name
+    rp_mount_point = '%s/%s' % (constants.RP_SSHFS_BASE_MOUNT_DIR, rp_name)
+
+    # Form {'name': ['icon', 'link', 'description']}
+    avaliable_apps = {}
 
     if not os.path.exists(rp_mount_point):
         os.makedirs(rp_mount_point)
@@ -268,8 +272,11 @@ def connect():
     # Successfully connected rp
     if response == 0:
         msg = "Successfully connected %s pitaya" % (rp_name)
-        file_path = "/tmp/%s/" % rp_name
-        file = open((file_path + "opt/redpitaya/version.txt"), "r")
+        mount_path = "/tmp/%s/" % rp_name
+        file = open(
+            (mount_path + constants.RP_VERSION_PATH + 'version.txt'),
+            "r")
+
         session['rp'] = {
             'connected': True,
             'ip': rp_ip,
@@ -280,11 +287,34 @@ def connect():
             'fpga': '0.94',
             'action': 'disconnect'
         }
+
+        # Get avaliable free applications list
+        apps_directory = mount_path + constants.RP_APPS_DIRECTORY
+        rp_list = \
+            subprocess.Popen(
+                ['ls', apps_directory,],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                stdin=subprocess.PIPE)
+
+        stdout, stderr = rp_list.communicate()
+        for app in stdout.split('\n'):
+            if app in constants.RP_GLOBALY_AVALIABLE_APPS:
+                icon_link = ('file://///%s%s/info/icon.png' % (apps_directory, app))
+                start_link = ('http://%s/%s/?type=run' % (rp_ip, app))
+                description = "" # Maybe implement
+                avaliable_apps[app] = {
+                    'icon': icon_link, 
+                    'start_app': start_link, 
+                    'desc': description}             
+
+        # Create response object
         response = {
             'success': True,
             'data': {
                 'msg': msg,
-                'rp': session['rp']}
+                'rp': session['rp'],
+                'apps': avaliable_apps }
         }
         return jsonify(response), 200
     else:
@@ -358,7 +388,6 @@ def latency_thread(queue):
                 stdin=subprocess.PIPE)
 
         stdout, stderr = rp_ping.communicate()
-        print stdout
         latency = \
             stdout.split('\n')[4].split(' ')[3].split('/')[1]
     except Exception:
