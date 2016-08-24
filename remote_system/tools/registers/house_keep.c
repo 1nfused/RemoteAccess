@@ -12,9 +12,9 @@ house_kp_t *house_keep = NULL;
 int fd = -1;
 
 //Init resources in virtual mem
-int init_housekeep(){
+int housekeep_init(){
 
-	if(release_housekeep(HK_BASE_ADDR, HK_BASE_SIZE) < -1){
+	if(housekeep_release() < -1){
 		printf("Mapping resources failed.");
 		return -1;
 	}
@@ -50,7 +50,7 @@ int init_housekeep(){
 }
 
 //Release res
-int release_housekeep(){
+int housekeep_release(){
 	 
 	if(house_keep){
 		if(munmap(house_keep, HK_BASE_SIZE) < 0){
@@ -65,8 +65,7 @@ int release_housekeep(){
 	return 0;
 }
 
-int get_house_kp_ptr(house_kp_t **house_keep_ptr){
-	printf("%d\n", house_keep->led_control);
+int get_house_ptr(house_kp_t **house_keep_ptr){
 	*house_keep_ptr = house_keep;
 	return 0;
 }

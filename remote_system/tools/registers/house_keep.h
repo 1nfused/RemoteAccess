@@ -1,4 +1,3 @@
-/* House keep register map */
 #include <stdint.h>
 
 #ifndef __HOUSE_KEEP
@@ -27,8 +26,8 @@ typedef struct house_keep{
 } house_kp_t;
 
 /* Function prototype definition */
-int init_housekeep();
-int release_housekeep();
-int get_house_kp_ptr(house_kp_t **house_keep_ptr);
+int housekeep_init();
+int housekeep_release();
+int get_house_ptr(house_kp_t **house_keep_ptr);
 
 #endif // __HOUSE_KEEP

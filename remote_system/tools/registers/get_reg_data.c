@@ -6,16 +6,24 @@
 int main(int argc, char **argv){
 	//Struct init
 	house_kp_t *house_keep = NULL;
+	oscilloscope_t *oscilloscope = NULL;
 
 	//mmap init
-	init_housekeep();
+	housekeep_init();
+	oscilloscope_init();
 
 	//Get data from ptr
-	get_house_kp_ptr(&house_keep);
-	printf("DATA\n");
-	printf("DATA: %d\n", house_keep->led_control);
+	get_house_ptr(&house_keep);
+	get_oscilloscope_ptr(&oscilloscope);
+
+	printf("%d\n", oscilloscope->conf);
 
 	//Write data to file
 	//TODO
+
+	//Release resources
+	housekeep_release();
+	oscilloscope_release();
+
 	return 0;
 }

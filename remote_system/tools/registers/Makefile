@@ -2,7 +2,7 @@
 CC = $(CROSS_COMPILE)gcc
 
 CFLAGS = -g -std=gnu99 -Wall -Werror
-OBJS = house_keep.o get_reg_data.o
+OBJS := $(patsubst %.c, %.o, $(wildcard *.c))
 EXECUTABLE = rp_registers
 
 all: $(EXECUTABLE)
@@ -13,3 +13,4 @@ $(EXECUTABLE): $(OBJS)
 clean:
 	$(RM) *.o
 	$(RM) $(OBJS)
+	$(RM) $(EXECUTABLE)
