@@ -27,7 +27,6 @@ app = Flask(__name__, template_folder='static/templates')
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-socketio = SocketIO(app)
 
 
 # User class
@@ -118,6 +117,7 @@ def scpi_server():
             flash("SCPI command failed to execute")
     return render_template('scpi_server.html')
 
+
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     avaliable_rp = {}
@@ -160,6 +160,7 @@ def index():
 def logs():
     return render_template('logs.html')
 '''
+
 
 @app.route('/settings', methods=['POST', 'GET'])
 def settings():
@@ -235,6 +236,7 @@ def settings():
 # When the redpitaya gets mounted, execute a C script or something, that will
 # run in the background and constantly pool data from the registers and GPIO
 
+
 @app.route('/gpio', methods=['GET'])
 def gpio():
     # Read GPIO file from mounted RP
@@ -245,6 +247,7 @@ def gpio():
 def registers():
     # Read registers file from mounted RP
     pass
+
 
 # One of the main functions
 @app.route('/connect', methods=['POST'])
@@ -294,6 +297,7 @@ def connect():
                 'success': False, 
                 'data' : { 'error': error }}), 504
 
+
 @app.route('/disconnect', methods=['POST'])
 def disconnect_rp():
     print "DISCONECTING PITAYA"
@@ -323,11 +327,13 @@ def disconnect_rp():
     return render_template(
         'index.html', response={'action': 'connect'})
 
+
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
     session.pop('logged_user', None)
     return redirect(url_for('/'))
+
 
 
 @app.route('/latency')
@@ -346,6 +352,7 @@ def latency():
         'data': str(queue.get())[:3] + 'ms'
     }
     return jsonify(response), 200
+
 
 def latency_thread(queue):
     latency = '--'
@@ -366,6 +373,7 @@ def latency_thread(queue):
 
     # Put latency object in que    
     queue.put(latency)
+
 
 @app.before_request
 def before_request():
