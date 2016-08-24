@@ -9,7 +9,7 @@
 #include "oscilloscope.h"
 
 oscilloscope_t *oscilloscope = NULL;
-int housekeep_fd = -1;
+int oscilloscope_fd = -1;
 
 //Init resources in virtual mem
 int oscilloscope_init(){
@@ -23,9 +23,9 @@ int oscilloscope_init(){
 	long page_addr, page_off, page_size = sysconf(_SC_PAGESIZE);
 
 	/* OPEN THE DEVICE */
-	housekeep_fd = open("/dev/mem", O_RDWR | O_SYNC);
+	oscilloscope_fd = open("/dev/mem", O_RDWR | O_SYNC);
 
-	if(housekeep_fd  < -1){
+	if(oscilloscope_fd  < -1){
 		printf("Error opening /dev/mem\n");
 		return -1;
 	}
@@ -37,7 +37,7 @@ int oscilloscope_init(){
 
 	/* mmap physical memory */
 	page_ptr = mmap(NULL, OSC_BASE_SIZE, PROT_READ | 
-		PROT_WRITE, MAP_SHARED, housekeep_fd, page_addr);
+		PROT_WRITE, MAP_SHARED, oscilloscope_fd, page_addr);
 
 	if((void *)page_ptr == MAP_FAILED){
 		printf("Mapping failed.\n");
@@ -57,9 +57,9 @@ int oscilloscope_release(){
 			printf("Unmapping failed.\n");
 			return -1;
 		}
-		if(housekeep_fd >= 1){
-			close(housekeep_fd);
-			housekeep_fd = -1;
+		if(oscilloscope_fd >= 1){
+			close(oscilloscope_fd);
+			oscilloscope_fd = -1;
 		}
 	}
 	return 0;

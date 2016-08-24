@@ -5,7 +5,7 @@
 
 /* Global address and offset definition */
 #define HK_BASE_ADDR 0x40000000
-#define HK_BASE_SIZE  0xFFFFF
+#define HK_BASE_SIZE  0x30000
 
 /* Stucture definition */
 typedef struct house_keep{

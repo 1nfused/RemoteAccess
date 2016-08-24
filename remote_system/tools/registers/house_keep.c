@@ -9,7 +9,7 @@
 #include "house_keep.h"
 
 house_kp_t *house_keep = NULL;
-int fd = -1;
+int housekeep_fd = -1;
 
 //Init resources in virtual mem
 int housekeep_init(){
@@ -23,9 +23,9 @@ int housekeep_init(){
 	long page_addr, page_off, page_size = sysconf(_SC_PAGESIZE);
 
 	/* OPEN THE DEVICE */
-	fd = open("/dev/mem", O_RDWR | O_SYNC);
+	housekeep_fd = open("/dev/mem", O_RDWR | O_SYNC);
 
-	if(fd  < -1){
+	if(housekeep_fd  < -1){
 		printf("Error opening /dev/mem\n");
 		return -1;
 	}
@@ -37,7 +37,7 @@ int housekeep_init(){
 
 	/* mmap physical memory */
 	page_ptr = mmap(NULL, HK_BASE_SIZE, PROT_READ | 
-		PROT_WRITE, MAP_SHARED, fd, page_addr);
+		PROT_WRITE, MAP_SHARED, housekeep_fd, page_addr);
 
 	if((void *)page_ptr == MAP_FAILED){
 		printf("Mapping failed.\n");
@@ -57,9 +57,9 @@ int housekeep_release(){
 			printf("Unmapping failed.\n");
 			return -1;
 		}
-		if(fd >= 1){
-			close(fd);
-			fd = -1;
+		if(housekeep_fd >= 1){
+			close(housekeep_fd);
+			housekeep_fd = -1;
 		}
 	}
 	return 0;
