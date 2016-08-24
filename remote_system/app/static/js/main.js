@@ -33,12 +33,14 @@ app.factory('connectedPitaya', function($rootScope) {
 		'fs': '--',
 		'fpga': '--',
 		'connected': false,
+		'apps': null,
 		'latency': 'N/A'
 	};
 
 	shared_rp.rp = rp_init;
+	shared_rp.apps = null;
 	shared_rp.prepBroadCastPitaya = function(
-		data, connected, latency){
+		data, apps, connected, latency){
 		
 		if (data) {
 			this.rp = data;
@@ -47,6 +49,11 @@ app.factory('connectedPitaya', function($rootScope) {
 		} else {
 			this.rp = rp_init;
 		}
+
+		if (app) {
+			this.apps = apps;
+		}
+
 		//Broadcast message to all other controllers
 		this.broadCastPitaya();
 	};
@@ -78,8 +85,8 @@ app.controller('basePageController', [
 	$http.post(url)
 	.success(function(response) {
 			console.log("SUCCESS");
-			$scope.avaliable_pitaya = response.data;
-  		})
+			$scope.avaliable_pitaya = response.data.avaliable_rp;
+		})
 		.error(function(response) {
     		console.log(response.success);
   	});
@@ -110,10 +117,14 @@ app.controller('mainPageController', [
 						$scope.poolLatency();
 						connectedPitaya.prepBroadCastPitaya(
 							data.data.rp,
+							data.data.apps,
 							true,
 							$scope.latency);
+						$scope.avaliable_apps = data.data.apps;
+						console.log($scope.avaliable_apps);
 					} else {
 						connectedPitaya.prepBroadCastPitaya(
+							null,
 							null,
 							false,
 							"N/A");

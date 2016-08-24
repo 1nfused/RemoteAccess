@@ -287,6 +287,52 @@ body{
   margin: 0px 0px 10px 0px !important;
 }
 
+/* RIGHT CONTENT */
+.right_content {
+  font-family: Arial;
+  background-color: black;
+  width: 70%;
+  float: left;
+  height: 100%;
+  padding: 10px 10px 10px 10px;
+}
+
+.apps_list {
+  background-color: blue;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  height: 100%;
+  overflow: auto;
+}
+
+.app_block {
+  width: 24%;
+  height: 120px;
+  float: left;
+  background-color: green;
+  margin: 5px auto auto 5px;
+}
+
+.app_icon {
+  padding: 5px 3px 3px 3px;
+  border: solid 1px black;
+  width: 100%;
+  height: 70%;
+}
+
+.app_desc {
+  border: 1px solid black;
+  width: 100%;
+  height: 30%;
+  text-align: center;
+  padding: 3px 3px 3px 3px;
+}
+
+.active_app {
+  height: 100%;
+  background-color: black;
+}
+
 /* STATUS BAR */
 .status_connection_pitaya{
   height: 100%;
@@ -314,13 +360,6 @@ body{
 
 .form_data label{
   text-align: right;
-}
-
-.right_content {
-  width: 70%;
-  float: left;
-  height: 100%;
-  background: black;
 }
 
 .left_block2 {

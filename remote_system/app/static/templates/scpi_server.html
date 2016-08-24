@@ -1,4 +1,4 @@
-<dvi class="content scpi_content">
+<dvi class="content scpi_content" ng-controller="scpiController">
 	<div class="settings_header">
 		<h2><strong>EXECUTE SCPI COMMAND</strong></h2>
 	</div>
@@ -27,7 +27,7 @@
 	<div>
 		<div class="scpi_script">
 		  <label for="username">Execute custom scpi script</label>
-		  <textarea class="form-control" rows="5" id="comment">
+		  <textarea rows="5" id="scpi_program">
 import sys
 # import redpitaya_scpi as scpi
 # The remote system takes care of all the imports
@@ -35,10 +35,21 @@ import sys
 rp_s = scpi.scpi({$ connected ? rp.ip : None; $})
 		  </textarea>
 		</div>
+		<div id="">
+			
+		</div>
 		<br>
 		<div class="text_area_buttons">
-			<button class="btn btn-primary">EXECUTE SCRIPT</button>
+			<button class="btn btn-primary" ng-click>EXECUTE SCRIPT</button>
 			<button class="btn btn-primary">SCPI COMMANDS</button>
 		</div>
 	</div>
-</dvi>
+</div>
+<script>
+	var editor = CodeMirror.fromTextArea(document.getElementById("scpi_program"),
+		{
+			mode: "python",
+			theme: "blackboard",
+			lineNumbers: true
+		});
+</script>
