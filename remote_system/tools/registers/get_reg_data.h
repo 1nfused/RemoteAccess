@@ -11,6 +11,4 @@
 
 #define OUTPUT_FILE "register_data.txt"
 
-int write_data_to_file();
-
 #endif // __GET_REG_DATA
