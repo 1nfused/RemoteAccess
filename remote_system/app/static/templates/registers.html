@@ -1,28 +1,32 @@
-{% extends "base.html" %}
-{% block extra_scripts %}{% endblock %}
-{% block extra_header %}{% endblock %}
-
-{% block content %}
-<div class="content content_registers">
+<div class="content content_registers" ng-controller="registersController">
 	<ul class="nav nav-tabs">
 	  <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
-	  <li><a data-toggle="tab" href="#menu1">Menu 1</a></li>
-	  <li><a data-toggle="tab" href="#menu2">Menu 2</a></li>
+	  <li><a data-toggle="tab" ng-click="scrollTo(house_keep)">HOUSE KEEP</a></li>
+	  <li><a data-toggle="tab" ng-click="scrollTo(oscilloscope)">OSCILLOSCOPE</a></li>
+	  <li><a data-toggle="tab" ng-click="scrollTo(generator)">GENERATOR</a></li>
+	  <li><a data-toggle="tab" ng-click="scrollTo(pid_controller)">PID CONTROLLER</a></li>
+	  <li><a data-toggle="tab" ng-click="scrollTo(mixed_signals)">MIXED SIGNALS</a></li>
+	  <li><a data-toggle="tab" ng-click="scrollTo(daisy_chain)">DAISY CHAIN</a></li>
 	</ul>
 
 	<div class="tab-content">
-	  <div id="home" class="tab-pane fade in active">
-	    <h3>HOME</h3>
-	    <p>Some content.</p>
+	  <div id="house_keep" class="tab-pane fade in active">
+	    <h3>HOUSE KEEP</h3>
 	  </div>
-	  <div id="menu1" class="tab-pane fade">
-	    <h3>Menu 1</h3>
-	    <p>Some content in menu 1.</p>
+	  <div id="oscilloscope" class="tab-pane fade">
+	    <h3>OSCILLOSCOPE</h3>
 	  </div>
-	  <div id="menu2" class="tab-pane fade">
-	    <h3>Menu 2</h3>
-	    <p>Some content in menu 2.</p>
+	  <div id="generator" class="tab-pane fade">
+	    <h3>GENERATOR</h3>
+	  </div>
+	  <div id="pid_controller" class="tab-pane fade">
+	    <h3>PID CONTROLLER</h3>
+	  </div>
+	  <div id="mixed_signals" class="tab-pane fade">
+	    <h3>MIXED SIGNALS</h3>
+	  </div>
+	  <div id="daisy_chain" class="tab-pane fade">
+	    <h3>DAISY CHAIN</h3>
 	  </div>
 	</div>
 </div>
-{% endblock %}

@@ -7,8 +7,8 @@ app.config(
 	    when("/index", {
 	        templateUrl: "/static/templates/main.html"
 	    }).
-	    when("/gpio", {
-	    	templateUrl: "/static/templates/io_pins.html"
+	    when("/registers", {
+	    	templateUrl: "/static/templates/registers.html"
 	    }).
 	    when("/settings", {
 	    	templateUrl: "/static/templates/settings.html"
@@ -177,6 +177,29 @@ app.controller('settingsController', [
 				.success(function(response) {
 					console.log("ADDED PITAYA");
 				});
+		}
+
+	}
+]);
+
+app.controller('registerController', [
+	'$scope', 
+	'$http', 
+	'$location', 
+	'$anchorScroll', 
+	'$rootScope', 
+	'connectedPitaya',
+	function(
+		$scope, 
+		$http, 
+		$location, 
+		$anchorScroll, 
+		$rootScope, 
+		connectedPitaya) {
+
+		$scope.scrollTo = function(id) {
+			$location.hash(id);
+			$anchorScroll();
 		}
 
 	}
