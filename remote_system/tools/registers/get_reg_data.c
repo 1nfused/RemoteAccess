@@ -61,7 +61,7 @@ int main(int argc, char **argv){
 	fprintf(file, "wr_ptr_trigger %d\n", oscilloscope_reg->wr_ptr_trigger);
 	fprintf(file, "cha_hystersis %d\n", oscilloscope_reg->cha_hystersis);
 	fprintf(file, "chb_hystersis %d\n", oscilloscope_reg->chb_hystersis);
-	fprintf(file, "\n");
+
 
 	fprintf(file, "GENERATOR\n");
 	fprintf(file, "state_machine_conf %d\n", generator_reg->state_machine_conf);
