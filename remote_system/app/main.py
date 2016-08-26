@@ -1,4 +1,4 @@
-
+ 
 import os
 import datetime
 import json
@@ -39,11 +39,12 @@ class User(db.Model):
     password = db.Column(db.String, default="root")
     role = db.Column(db.Boolean, default=False)
 
-    def __init__(self, username, password, name, email):
+    def __init__(self, username, password, name, email, role=False):
         self.username = username
         self.password = password
         self.name = name
         self.email = email
+        self.role = role
 
 
 # Red Pitaya instance class
@@ -61,7 +62,7 @@ class RedPitaya(db.Model):
 
 @app.route('/', methods=['GET', 'POST'])
 def login_page():
-        
+    db.session.commit() 
     error = None
     # Login authentication
     if request.method == 'POST':
@@ -140,9 +141,9 @@ def index():
                 # Get a pitaya with the same mac
                 rp = RedPitaya.query.filter(
                     RedPitaya.mac == split[1].upper()).first()
-                # Append pitaya to list if any
                 if rp:
-                    avaliable_rp[split[0]] = rp.name 
+                    avaliable_rp[split[0]] = rp.name
+                    break 
             else:
                 continue
         except IndexError:
@@ -209,9 +210,9 @@ def settings():
     
     elif add_type == 'pitaya':
         rp_name = \
-            post_request.get('data')['rp_name']
+            post_request.get('data')['name']
         rp_mac = \
-            post_request.get('data')['rp_mac']
+            post_request.get('data')['mac']
 
         # Check if MAC is correct right away
         if len(rp_mac) != 17:
@@ -225,10 +226,10 @@ def settings():
         if RedPitaya.query.filter(RedPitaya.mac == rp_mac).first():
             response['msg'] = "RedPitaya already exists!"
             return jsonify(response), 504
-        else:
-            rp = RedPitaya(rp_name, rp_mac)
-            db.session.add(rp)
-            db.session.commit()
+            
+        rp = RedPitaya(rp_name, rp_mac)
+        db.session.add(rp)
+        db.session.commit()
 
         response = {
             'success': True,
