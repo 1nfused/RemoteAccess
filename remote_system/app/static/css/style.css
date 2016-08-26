@@ -419,6 +419,40 @@ body{
 .disconnect {
   border: 1px solid red;
 }
+/* REGISTERS SECTION */
+.region_header {
+    background: black;
+    color:white;
+    text-align: center; 
+}
+
+.region_header p {
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.state {
+    border: 1px solid white;
+    text-align: center;
+}
+
+.state_col {
+    text-align: center;
+}
+
+.state_version {
+    color: white;
+    font-weight: bold;
+    background: #72b095;
+}
+
+.state_header {
+    background-color: #3a9ad9;
+    color: white;
+    font-weight: bold;
+}
+
 
 /* IO PINS TABLE */
 .gpio_ext_1 {
@@ -462,6 +496,7 @@ body{
 .text_area_buttons {
   align: right;
 }
+
 
 
 

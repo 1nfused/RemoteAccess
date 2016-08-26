@@ -183,23 +183,28 @@ app.controller('settingsController', [
 ]);
 
 app.controller('registerController', [
-	'$scope', 
-	'$http', 
-	'$location', 
-	'$anchorScroll', 
-	'$rootScope', 
-	'connectedPitaya',
-	function(
-		$scope, 
-		$http, 
-		$location, 
-		$anchorScroll, 
-		$rootScope, 
-		connectedPitaya) {
+	'$scope', '$http', '$rootScope', 'connectedPitaya',
+	function($scope, $http, $rootScope, connectedPitaya) {
+		$scope.registers = [{}, {}, {}, {}, {}, {}]
+		$scope.base_url =
+		  		'http://' + document.domain + ':' + location.port
+		var url = $scope.base_url + '/registers'
 
-		$scope.scrollTo = function(id) {
-			$location.hash(id);
-			$anchorScroll();
+		$http.post(url)
+		.success(function(response) {
+				$scope.registers = response.data;
+				console.log($scope.registers.PIDCONTROLLER);
+			})
+			.error(function(response) {
+	    		console.log(response.success);
+	  	});
+
+		$scope.range = function(count){
+		  var ratings = []; 
+		  for (var i = 0; i < count; i++) { 
+		    ratings.push(i) 
+		  } 
+		  return ratings;
 		}
 
 	}

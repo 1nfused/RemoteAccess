@@ -13,7 +13,6 @@ from flask import Flask, render_template, \
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey, DateTime
 from sqlalchemy.orm import relationship
-from flask.ext.socketio import SocketIO, emit
 
 from requests.exceptions import HTTPError, ConnectionError
 from time import gmtime, strftime
@@ -236,21 +235,30 @@ def settings():
             'msg': "Successfully created Red Pitaya %s" % rp_name }
     return jsonify(response), 200
 
-# IDEA FOR registers
-# When the redpitaya gets mounted, execute a C script or something, that will
-# run in the background and constantly pool data from the registers and GPIO
-
-
 @app.route('/gpio', methods=['GET'])
 def gpio():
     # Read GPIO file from mounted RP
     pass
 
-
+# Opens up the registers file and reads registers
 @app.route('/registers', methods=['POST', 'GET'])
 def registers():
-    # Read registers file from mounted RP
-    pass
+    registers = None
+    
+    try:
+        rp_name = session.get('rp')['name']
+        registers = get_register_data(rp_name)
+    except KeyError:
+        response = {
+            'data': None,
+            'success': False
+        }
+
+    response = {
+        'data': registers,
+        'success': True
+    }
+    return jsonify(response), 200
 
 
 # One of the main functions
@@ -309,7 +317,10 @@ def connect():
                 avaliable_apps[app] = {
                     'icon': icon_link, 
                     'start_app': start_link, 
-                    'desc': description}             
+                    'desc': description}
+
+        # Start registers function          
+        # pool_register_data(rp_ip)
 
         # Create response object
         response = {
@@ -403,6 +414,33 @@ def latency_thread(queue):
     # Put latency object in que    
     queue.put(latency)
 
+def pool_register_data(rp_ip):
+    print rp_ip
+    response = os.system(
+        'ssh -p root root@%s ' \
+        '/opt/redpitaya/rp_registers' % rp_ip)
+    if response != 0:
+        print "Failed to execute registers script."
+        return None
+    return True
+
+def get_register_data(pitaya_name):
+    registers = {}
+    file = open('/tmp/%s/opt/redpitaya/%s' % (
+        pitaya_name, constants.REGISTER_DATA_FILE_NAME))
+
+    mem_block_name = ""
+    for line in file:
+        if line == '\n':
+            continue
+        if line.replace('\n', '').isalpha():
+            mem_block_name = line.replace('\n', '')
+            registers[mem_block_name] = {}
+        else:
+            register_data = line.split(" ")
+            registers[mem_block_name][register_data[0]] = \
+                list("{0:b}".format(int(register_data[1])))
+    return registers
 
 @app.before_request
 def before_request():
