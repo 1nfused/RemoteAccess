@@ -38,7 +38,7 @@ int main(int argc, char **argv){
 
 	//Getting bus error on writing struct to file. Adding each member separately...
 	//Maybe change to union struct or bus error someday :D
-	fprintf(file, "HOUSE_KEEP\n");
+	fprintf(file, "HOUSEKEEPING\n");
 	fprintf(file, "id %d\n", house_keep_reg->id);
 	fprintf(file, "dna_p1 %d\n", house_keep_reg->dna_p1);
 	fprintf(file, "dna_p2 %d\n", house_keep_reg->dna_p2);
@@ -75,7 +75,7 @@ int main(int argc, char **argv){
 	fprintf(file, "chb_count_step %d\n", generator_reg->chb_count_step);
 	fprintf(file, "\n");
 
-	fprintf(file, "PID_CONTROLLER\n");
+	fprintf(file, "PIDCONTROLLER\n");
 	fprintf(file, "pid_config %d\n", pid_controller_reg->pid_config);
 	fprintf(file, "pid11_set_point %d\n", pid_controller_reg->pid11_set_point);
 	fprintf(file, "pid11_prop_coef %d\n", pid_controller_reg->pid11_prop_coef);
@@ -95,7 +95,7 @@ int main(int argc, char **argv){
 	fprintf(file, "pid22_deriv_coef %d\n", pid_controller_reg->pid22_deriv_coef);
 	fprintf(file, "\n");
 
-	fprintf(file, "MIXED_SIGNALS\n");
+	fprintf(file, "MIXEDSIGNALS\n");
 	fprintf(file, "xadc_aif0 %d\n", mixed_signals_reg->xadc_aif0);
 	fprintf(file, "xadc_aif1 %d\n", mixed_signals_reg->xadc_aif1);
 	fprintf(file, "xadc_aif2 %d\n", mixed_signals_reg->xadc_aif2);
@@ -106,7 +106,7 @@ int main(int argc, char **argv){
 	fprintf(file, "pwm_dac3 %d\n", mixed_signals_reg->pwm_dac3);
 	fprintf(file, "\n");
 
-	fprintf(file, "DAISY_CHAIN\n");
+	fprintf(file, "DAISYCHAIN\n");
 	fprintf(file, "control %d\n", daisy_chain_reg->control);
 	fprintf(file, "trans_data_selector %d\n", daisy_chain_reg->trans_data_selector);
 	fprintf(file, "received_training %d\n", daisy_chain_reg->received_training);
