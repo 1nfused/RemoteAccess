@@ -19,6 +19,7 @@ from time import gmtime, strftime
 from threading import Thread
 import multiprocessing
 from time import sleep
+from math import *
 
 import constants
 
@@ -439,8 +440,12 @@ def get_register_data(pitaya_name):
             registers[mem_block_name] = {}
         else:
             register_data = line.split(" ")
-            registers[mem_block_name][register_data[0]] = \
-                list("{0:b}".format(int(register_data[1])))
+            binary_reg_val = list("{0:b}".format(int(register_data[1])))
+            short_len = abs(len(binary_reg_val) - 32)
+            register_value_32_bit = \
+                [(lambda x: x)('0') for x in range(short_len)] + \
+                    binary_reg_val + [register_data[1]]
+            registers[mem_block_name][register_data[0]] = register_value_32_bit
     return registers
 
 @app.before_request

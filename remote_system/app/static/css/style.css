@@ -435,6 +435,7 @@ body{
 .state {
     border: 1px solid white;
     text-align: center;
+    color: white;
 }
 
 .state_col {
@@ -442,17 +443,28 @@ body{
 }
 
 .state_version {
-    color: white;
     font-weight: bold;
     background: #72b095;
 }
 
 .state_header {
     background-color: #3a9ad9;
-    color: white;
     font-weight: bold;
 }
 
+table.reg_table th:nth-child(1) {
+  background-color: #808080;
+  color: #808080;
+  border: none;
+}
+
+.state_decimal {
+  background-color: #DB4E4E;
+}
+
+.tab_text_reg {
+  color: white;
+}
 
 /* IO PINS TABLE */
 .gpio_ext_1 {
