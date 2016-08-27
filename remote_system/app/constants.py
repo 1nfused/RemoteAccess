@@ -11,3 +11,4 @@ RP_GLOBALY_AVALIABLE_APPS = [
 	'scope+gen', 
 	'impedance_analyzer',
 	'shunt_app']
+REGISTER_DATA_FILE_NAME = 'register_data.txt'

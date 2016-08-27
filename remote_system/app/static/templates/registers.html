@@ -1,32 +1,103 @@
-<div class="content content_registers" ng-controller="registersController">
+<div class="content content_registers" ng-controller="registerController">
 	<ul class="nav nav-tabs">
-	  <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
-	  <li><a data-toggle="tab" ng-click="scrollTo(house_keep)">HOUSE KEEP</a></li>
-	  <li><a data-toggle="tab" ng-click="scrollTo(oscilloscope)">OSCILLOSCOPE</a></li>
-	  <li><a data-toggle="tab" ng-click="scrollTo(generator)">GENERATOR</a></li>
-	  <li><a data-toggle="tab" ng-click="scrollTo(pid_controller)">PID CONTROLLER</a></li>
-	  <li><a data-toggle="tab" ng-click="scrollTo(mixed_signals)">MIXED SIGNALS</a></li>
-	  <li><a data-toggle="tab" ng-click="scrollTo(daisy_chain)">DAISY CHAIN</a></li>
+	  <li><a data-toggle="tab" data-target="#house_keep" class="tab_text_reg">HOUSE KEEP</a></li>
+	  <li><a data-toggle="tab" data-target="#oscilloscope" class="tab_text_reg">OSCILLOSCOPE</a></li>
+	  <li><a data-toggle="tab" data-target="#generator" class="tab_text_reg">GENERATOR</a></li>
+	  <li><a data-toggle="tab" data-target="#pid_controller" class="tab_text_reg">PID CONTROLLER</a></li>
+	  <li><a data-toggle="tab" data-target="#mixed_signals" class="tab_text_reg">MIXED SIGNALS</a></li>
+	  <li><a data-toggle="tab" data-target="#daisy_chain" class="tab_text_reg">DAISY CHAIN</a></li>
 	</ul>
 
 	<div class="tab-content">
 	  <div id="house_keep" class="tab-pane fade in active">
 	    <h3>HOUSE KEEP</h3>
+	    <table id="house_keep_table" class="reg_table table table-stripped">
+	    	<thead hidden>
+	    		<th width="25px" ng-repeat="i in range('32', '-1')" class="state state_header">{$ i $}</th>
+	    	</thead>
+            <tbody>
+                <tr ng-repeat="(register, binary) in registers.HOUSEKEEPING" id="{$ register $}" class="state_table">
+	                <td class="col-xs-1 state state_header">{$ register $}</td>
+	                <td ng-repeat="i in range('32', '0')" id="{$ i $}" class="state state_version">{$ binary[i] $}</td>
+	                <td class="col-xs-1 state state_decimal">{$ binary[32] $}</td>
+                </tr>
+            </tbody>
+        </table>
 	  </div>
 	  <div id="oscilloscope" class="tab-pane fade">
 	    <h3>OSCILLOSCOPE</h3>
+	    <table id="oscilloscope_table" class="reg_table table table-stripped">
+	    	<thead hidden>
+	    		<th width="25px" ng-repeat="i in range('32', '-1')" class="state state_header">{$ i $}</th>
+	    	</thead>
+            <tbody>
+                <tr ng-repeat="(register, binary) in registers.OSCILLOSCOPE" id="{$ register $}" class="state_table">
+	                <td class="col-xs-1 state state_header">{$ register $}</td>
+	                <td ng-repeat="i in range('32', '0')" id="{$ i $}" class="state state_version">{$ binary[i] $}</td>
+	                <td class="col-xs-1 state state_decimal">{$ binary[32] $}</td>
+                </tr>
+            </tbody>
+        </table>
 	  </div>
 	  <div id="generator" class="tab-pane fade">
 	    <h3>GENERATOR</h3>
+	    <table id="generator_table" class="reg_table table table-stripped">
+	    	<thead hidden>
+	    		<th width="25px" ng-repeat="i in range('32', '-1')" class="state state_header">{$ i $}</th>
+	    	</thead>
+            <tbody>
+                <tr ng-repeat="(register, binary) in registers.GENERATOR" id="{$ register $}" class="state_table">
+	                <td class="col-xs-1 state state_header">{$ register $}</td>
+	                <td ng-repeat="i in range('32', '0')" id="{$ i $}" class="state state_version">{$ binary[i] $}</td>
+	                <td class="col-xs-1 state state_decimal">{$ binary[32] $}</td>
+                </tr>
+            </tbody>
+        </table>
 	  </div>
 	  <div id="pid_controller" class="tab-pane fade">
 	    <h3>PID CONTROLLER</h3>
+	    <table id="pid_controller_table" class="reg_table table table-stripped">
+	    	<thead hidden>
+	    		<th width="25px" ng-repeat="i in range('32', '-1')" class="state state_header">{$ i $}</th>
+	    	</thead>
+            <tbody>
+                <tr ng-repeat="(register, binary) in registers.PIDCONTROLLER" id="{$ register $}" class="state_table">
+	                <td id="state_header" class="col-xs-1 state state_header">{$ register $}</td>
+	                <td ng-repeat="i in range('32', '0')" id="{$ i $}" class="state state_version">{$ binary[i] $}</td>
+	                <td id="state_header" class="col-xs-1 state state_decimal">{$ binary[32] $}</td>
+                </tr>
+            </tbody>
+        </table>
 	  </div>
 	  <div id="mixed_signals" class="tab-pane fade">
 	    <h3>MIXED SIGNALS</h3>
+	    <table id="mixed_signals_table" class="reg_table table table-stripped">
+	    	<thead hidden>
+	    		<th width="25px" ng-repeat="i in range('32', '-1')" class="state state_header">{$ i $}</th>
+	    	</thead>
+            <tbody>
+                <tr ng-repeat="(register, binary) in registers.MIXEDSIGNALS" id="{$ register $}" class="state_table">
+	                <td class="col-xs-1 state state_header">{$ register $}</td>
+	                <td ng-repeat="i in range('32', '0')" id="{$ i $}" class="state state_version">{$ binary[i] $}</td>
+	                <td class="col-xs-1 state state_decimal">{$ binary[32] $}</td>
+                </tr>
+            </tbody>
+        </table>
 	  </div>
 	  <div id="daisy_chain" class="tab-pane fade">
 	    <h3>DAISY CHAIN</h3>
+	    <table id="daisy_chain_table" class="reg_table table table-stripped">
+	    	<thead hidden>
+	    		<th width="25px" ng-repeat="i in range('32', '-1')" class="state state_header">{$ i $}</th>
+	    	</thead>
+            <tbody>
+                <tr ng-repeat="(register, binary) in registers.DAISYCHAIN" id="{$ register $}" class="state_table">
+	                <td class="col-xs-1 state state_header">{$ register $}</td>
+	                <td ng-repeat="i in range('32', '0')" id="{$ i $}" class="state state_version">{$ binary[i] $}</td>
+	                <td class="col-xs-1 state state_decimal">{$ binary[32] $}</td>
+                </tr>
+            </tbody>
+        </table>
 	  </div>
 	</div>
 </div>
