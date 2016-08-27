@@ -1,10 +1,15 @@
-/** @file worker.h
- *
+/**
  * $Id: worker.h 881 2013-12-16 05:37:34Z rp_jmenart $
  *
- * @brief Red Pitaya Oscilloscope Worker (C Header).
- * @author Jure Menart <juremenart@gmail.com>
- * @copyright Red Pitaya  http://www.redpitaya.com
+ * @brief Red Pitaya Oscilloscope worker.
+ *
+ * @Author Jure Menart <juremenart@gmail.com>
+ *         
+ * (c) Red Pitaya  http://www.redpitaya.com
+ *
+ * This part of code is written in C programming language.
+ * Please visit http://en.wikipedia.org/wiki/C_(programming_language)
+ * for more details on the language used herein.
  */
 
 #ifndef __WORKER_H
@@ -42,6 +47,9 @@ int rp_osc_get_signals(float ***signals, int *sig_idx);
  * and marks it dirty 
  */
 int rp_osc_set_signals(float **source, int index);
+/* Fills the output measuremenet data with last measurements
+ */
+int rp_osc_set_meas_data(rp_osc_meas_res_t ch1_meas, rp_osc_meas_res_t ch2_meas);
 
 /* Prepares time vector (only where there is a need for it) */
 int rp_osc_prepare_time_vector(float **out_signal, int dec_factor,
@@ -56,9 +64,13 @@ int rp_osc_prepare_time_vector(float **out_signal, int dec_factor,
  * TODO: Remove time vector generation from these functions, it should
  * be created at the beginning
  */
-int send_data(float **cha_signal, int *in_cha_signal,
+int rp_osc_decimate(float **cha_signal, int *in_cha_signal,
                     float **chb_signal, int *in_chb_signal,
-                    float **time_signal);
+                    float **time_signal, int dec_factor, 
+                    float t_start, float t_stop, int time_unit,
+                    rp_osc_meas_res_t *ch1_meas, rp_osc_meas_res_t *ch2_meas,
+                    float ch1_max_adc_v, float ch2_max_adc_v,
+                    float ch1_user_dc_off, float ch2_user_dc_off);
 
 int rp_osc_decimate_partial(float **cha_out_signal, int *cha_in_signal, 
                             float **chb_out_signal, int *chb_in_signal,
@@ -79,14 +91,18 @@ int rp_osc_auto_set(rp_app_params_t *orig_params,
 /* helper function - returns the factor for time unit conversion */
 int rp_osc_get_time_unit_factor(int time_unit);
 
-/* Thread functions declared here */
-
-void* lcr_thread(void *conversation_pipes);
-
-float thread_function(float argv);
-
-void* test_thread(void* parameter);
-
-int rp_load_data(float save_flag);
+/* helper function - clears the measurement structure */
+int rp_osc_meas_clear(rp_osc_meas_res_t *ch_meas);
+/* helper function - calculates min, max and accumulates average value */
+int rp_osc_meas_min_max(rp_osc_meas_res_t *ch_meas, int sig_data);
+/* helper function - calculates average and amplitude */
+int rp_osc_meas_avg_amp(rp_osc_meas_res_t *ch_meas, int avg_len);
+/* helper function - calculates period and frequency */
+int rp_osc_meas_period(rp_osc_meas_res_t *ch1_meas, rp_osc_meas_res_t *ch2_meas, 
+                       int *in_cha_signal, int *in_chb_signal, int dec_factor);
+int meas_period(rp_osc_meas_res_t *meas, int *in_signal, int wr_ptr_trig, int dec_factor,
+                int *min, int *max);
+/* helper function - convert CNT to V for meas. data (min, max, amp, avg) */
+int rp_osc_meas_convert(rp_osc_meas_res_t *ch_meas, float adc_max_v, int32_t cal_dc_offs);
 
 #endif /* __WORKER_H*/
