@@ -509,7 +509,46 @@ table.reg_table th:nth-child(1) {
   align: right;
 }
 
+/* SAVED DATA BLOCK */
+.saved_data_block {
+  height: 65px;
+  border: 1px solid white;
+  margin-bottom: 30px;
+}
 
+.saved_data_inner {
+  width: 100%;
+  height: 100%;
+}
+
+.saved_data_block a {
+  color: white;
+}
+
+.saved_d_picture {
+  float: left;
+}
+
+.saved_d_details {
+  float: right;
+  text-align: center;
+  vertical-align: middle;
+  width: 55%;
+  height: 100%;
+  border: solid black 1px;
+}
+
+.save_name {
+  height: 50%;
+}
+
+.save_date {
+  height: 50%;
+}
+
+.data_verbose {
+  padding: 5px 5px 5px 5px;
+}
 
 
 

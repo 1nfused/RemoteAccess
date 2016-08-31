@@ -5,17 +5,17 @@
 	<hr class="custom_breaker">
 
 	<div class="form_data">
-		<form action="" class="form-horizontal">
+		<form class="form-horizontal">
 			<label for="username">Execute Scpi Command</label>
 			<div class="form-group">
 			    <div class="col-xs-5 col-sm-5">
-			      <input class="form-control" id="scpi_command" name="scpi_command" type="text" placeholder="SC[PI]:COMmand">
+			      <input ng-model="scpi_command" class="form-control" id="scpi_command" name="scpi_command" type="text" placeholder="SC[PI]:COMmand">
 			    </div>
 			    <div class="col-xs-5 col-sm-5">
-			      <input class="form-control" id="scpi_args" name="scpi_args" type="username" placeholder="SCPI ARG1; SCPI ARGS2;">
+			      <input ng-model="scpi_args" class="form-control" id="scpi_args" name="scpi_args" type="username" placeholder="SCPI ARG1; SCPI ARGS2;">
 			    </div>
 			    <div class="col-xs-2">
-		      		<button name="scpi_command" class="btn btn-primary" type="submit">GO</button>
+		      		<button name="scpi_command" class="btn btn-primary" ng-click="executeScpiCommand(scpi_command, scpi_args)" type="submit">GO</button>
 		    	</div>
 		  	</div>
 		 </form>
@@ -40,7 +40,7 @@ rp_s = scpi.scpi({$ connected ? rp.ip : None; $})
 		</div>
 		<br>
 		<div class="text_area_buttons">
-			<button class="btn btn-primary" ng-click>EXECUTE SCRIPT</button>
+			<button class="btn btn-primary" ng-click="">EXECUTE SCRIPT</button>
 			<button class="btn btn-primary">SCPI COMMANDS</button>
 		</div>
 	</div>

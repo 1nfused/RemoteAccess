@@ -16,6 +16,9 @@ app.config(
 	    when("/scpi_server", {
 	    	templateUrl: "/static/templates/scpi_server.html"
 	    }).
+	    when("/saved_data", {
+	    	templateUrl: "/static/templates/saved_data.html"
+	    }).
 	    otherwise({
 	    	redirectTo : "/index"
 	    });
@@ -157,6 +160,25 @@ app.controller('mainPageController', [
 	}
 ]);
 
+app.controller('scpiController', [
+	'$scope', '$http', '$rootScope', 'connectedPitaya', 
+	function($scope, $http, $rootScope, connectedPitaya) {
+		var scpi_url = $scope.base_url + '/scpi_server';
+
+		console.log(scpi_url);
+		
+		$scope.executeScpiCommand = function(scpi_command, scpi_args) {
+			$http.post(scpi_url, 
+				{ 'scpi_command': scpi_command,
+				  'scpi_args': scpi_args,
+				  'type': 'single' })
+				.success(function(response) {
+					console.log("Success");
+				});
+		}
+	}
+]);
+
 app.controller('settingsController', [
 	'$scope', '$http', '$timeout', '$rootScope', 'connectedPitaya',
 	function($scope, $http, $timeout, $rootScope, connectedPitaya) {
@@ -208,3 +230,65 @@ app.controller('registerController', [
 		}
 	}
 ]);
+
+app.controller('savedDataController', [
+	'$scope', '$http', '$rootScope', 'connectedPitaya',
+	function($scope, $http, $rootScope, connectedPitaya) {
+		
+		$scope.showModal = false;
+		$scope.name = "";
+		$scope.data = [[]];
+		$scope.date = "";
+		$scope.app = "";
+		$scope.saved_data_list = {}
+
+		$scope.showData = function(name, data){
+    		$scope.name = name;
+    		$scope.data = data.data;
+    		$scope.date = data.date;
+    		$scope.app = data.app;
+    		$scope.showModal = !$scope.showModal;
+    		$scope.data = data;
+		};
+
+		$scope.base_url = 
+		  	'http://' + document.domain + ':' + location.port
+	}
+]);
+
+app.directive('modal', function () {
+    return {
+      templateUrl: "/static/templates/data_modal.html",
+      restrict: 'E',
+      transclude: true,
+      replace:true,
+      scope:true,
+      link: function postLink(scope, element, attrs) {
+          scope.$watch(attrs.visible, function(value){
+          if(value == true) {
+            $(element).modal('show');
+          }
+          else {
+            $(element).modal('hide');
+       	  }
+        });
+
+        $(element).on('shown.bs.modal', function(){
+          scope.$apply(function(){
+            scope.$parent[attrs.visible] = true;
+            var data = scope[attrs.ngModel];
+            $.plot(
+            	$('#placeholder'), 
+            	[scope.data], 
+            	{ lines: { lineWidth: 1 }});
+          });
+        });
+
+        $(element).on('hidden.bs.modal', function(){
+          scope.$apply(function(){
+            scope.$parent[attrs.visible] = false;
+          });
+        });
+      }
+    };
+  });
