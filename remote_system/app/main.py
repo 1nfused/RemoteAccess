@@ -6,6 +6,7 @@ import logging
 import requests
 import urllib2
 import subprocess
+import sys
 
 from flask import Flask, render_template, \
     request, url_for, redirect, session, flash, g, jsonify
@@ -22,6 +23,7 @@ from time import sleep
 from math import *
 
 import constants
+import redpitaya_scpi as scpi
 
 app = Flask(__name__, template_folder='static/templates')
 app.config.from_object(os.environ['APP_SETTINGS'])
@@ -63,7 +65,6 @@ class RedPitaya(db.Model):
 
 @app.route('/', methods=['GET', 'POST'])
 def login_page():
-    db.session.commit() 
     error = None
     # Login authentication
     if request.method == 'POST':
@@ -96,27 +97,6 @@ def login_page():
             error = 'You shall not pass'
 
     return render_template('login.html', error=error)
-
-
-# Uses sockets to connect to a scpi server running on a remote device
-@app.route('/scpi_server', methods=['GET', 'POST'])
-def scpi_server():
-
-    # Scpi args are in form ARG1 ARG2,...,ARGN
-    # as defined in scpi-99 standard
-    scpi_command = request.form.get('scpi_command')
-    scpi_args = request.form.get('scpi_args')
-    if scpi_args:
-        scpi_args = scpi_args.split(' ')
-    
-    rp = session['rp']
-
-    if request.method == 'POST':
-        try:
-            flash("Successfully executed SCPI command")
-        except:
-            flash("SCPI command failed to execute")
-    return render_template('scpi_server.html')
 
 
 @app.route('/index', methods=['GET', 'POST'])
@@ -369,6 +349,44 @@ def disconnect_rp():
     flash("Successfully disconnected Red Pitaya %s" % rp_name)
     return render_template(
         'index.html', response={'action': 'connect'})
+
+
+# Uses sockets to connect to a scpi server running on a remote device
+@app.route('/scpi_server', methods=['POST', 'GET'])
+def scpi_server():
+    # Scpi args are in form ARG1 ARG2,...,ARGN
+    # as defined in scpi-99 standard
+    post_request = json.loads(request.data.decode())
+    rp_s = None
+    response = {
+        'success': False,
+        'data': "Pitaya not connected!"
+    }
+    print session['rp'].get('connected')
+    if(session['rp'].get('connected') == True):
+        rp_s = scpi.scpi(session.get('rp')['ip'])
+        print session.get('rp')['ip']
+    else:
+        pass
+
+    scpi_command = post_request.get('scpi_command')
+    scpi_args = post_request.get('scpi_args')
+
+    if scpi_args:
+        scpi_args = scpi_args.split(' ')
+    
+    rp = session['rp']
+    exec_type = post_request.get('type')
+
+    if exec_type == 'single':
+        rp_s.tx_txt(scpi_command + ' ' +  ''.join(scpi_args))
+        print scpi_command + ''.join(scpi_args)
+    elif exec_type == 'script':
+        pass
+    
+    print "Here"
+    response = { 'success': True }
+    return jsonify(response), 200
 
 
 @app.route('/logout')
