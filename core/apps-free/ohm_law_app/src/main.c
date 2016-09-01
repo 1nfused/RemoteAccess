@@ -170,6 +170,7 @@ static rp_app_params_t rp_main_params[PARAMS_NUM+1] = {
     {  "change_shunt", 0, 0, 0, 0, 1 },
     {  "set_led", 0, 0, 0, 0, 8 },
     {  "change_led", 0, 0, 0, 0, 2 },
+    {  "save_data", 0, 0, 0, 0, 1 },
 
     /********************************************************/
     /* Arbitrary Waveform Generator parameters from here on */

@@ -1773,11 +1773,27 @@
 
   function saveData(){
     var channel = $('#save_channel').val();
-    console.log("SAVING DATA");
-    $.post('http://localhost:5000/save_data', {'data': channel})
-    .success(function(response){
-      console.log('SUCCESS');
+    post_data = {
+      'success': true
+    }
+
+    params.local.saved_data = 1;
+    sendParams();
+
+    $.ajax({
+      type: 'POST',
+      url: 'http://localhost:5000/save_data',
+      crossDomain: true,
+      data: post_data,
+      dataType: 'json',
+      success: function(responseData, textStatus, jqXHR) {
+          var value = responseData.someKey;
+      },
+      error: function (responseData, textStatus, errorThrown) {
+          alert('POST failed.');
+      }
     });
+    
   }
 
   </script>
