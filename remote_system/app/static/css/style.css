@@ -5,11 +5,11 @@ html{
 
 body{
   height: 100%;
-  background: #76b852; /* fallback for old browsers */
-  background: -webkit-linear-gradient(right, #CCCCCC, #CCCCCC);
-  background: -moz-linear-gradient(right, #CCCCCC, #CCCCCC);
-  background: -o-linear-gradient(right, #CCCCCC, #CCCCCC);
-  background: linear-gradient(to left, #CCCCCC, #CCCCCC);
+  background: #1E90FF; /* fallback for old browsers */
+  background: -webkit-linear-gradient(right, #6495ED, #1E90FF);
+  background: -moz-linear-gradient(right, #6495ED, #1E90FF);
+  background: -o-linear-gradient(right, #6495ED, #1E90FF);
+  background: linear-gradient(to left, #6495ED, #1E90FF);
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -511,9 +511,10 @@ table.reg_table th:nth-child(1) {
 
 /* SAVED DATA BLOCK */
 .saved_data_block {
-  height: 65px;
-  border: 1px solid white;
-  margin-bottom: 30px;
+  height: 80px;
+  background: linear-gradient(141deg, #0fb8ad 0%, #1fc8db 51%, #2cb5e8 75%);
+  margin: 1px 1px 1px 1px;
+  padding: 3px 0px 3px 0px;
 }
 
 .saved_data_inner {
@@ -527,23 +528,26 @@ table.reg_table th:nth-child(1) {
 
 .saved_d_picture {
   float: left;
+  border: 1px solid black;
+  height: 100%;
+  width: 50%;
+}
+
+.saved_d_picture img {
+  width: 100%;
+  height: 100%;
 }
 
 .saved_d_details {
   float: right;
+  height: 100%;
+  width: 50%;
   text-align: center;
   vertical-align: middle;
-  width: 55%;
-  height: 100%;
-  border: solid black 1px;
 }
 
-.save_name {
-  height: 50%;
-}
-
-.save_date {
-  height: 50%;
+.save_block {
+  height: 25%;
 }
 
 .data_verbose {

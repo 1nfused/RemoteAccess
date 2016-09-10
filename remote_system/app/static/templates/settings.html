@@ -20,10 +20,10 @@
 		  	</div>
 
 		  	<div class="col-sm-offset-2">
-		      <button ng-click="addPitaya(pitaya)" name="settings_add" value="pitaya" class="custom_button" type="submit">Add Pitaya</button>
+		      <button ng-click="addPitaya(pitaya)" name="settings_add" value="pitaya" class="btn btn-primary custom_button" type="submit">Add Pitaya</button>
 		    </div>
 		</form>
-
+		<br>
 	  	<div class="settings_header">
 			<h2><strong>ADD USER</strong></h2>
 		</div>
@@ -56,7 +56,61 @@
 		  	</div>
 
 		  	<div class="col-sm-offset-2">
-		      <button name="settings_add" value="user" class="custom_button" ng-click="addUser(user)">Add user</button>
+		      <button name="settings_add" value="user" class="btn btn-primary custom_button" ng-click="addUser(user)">Add user</button>
+		    </div>
+		</form>
+		<br>
+		<div class="settings_header">
+			<h2><strong>PROFILE SETTINGS</strong></h2>
+		</div>
+		<hr class="custom_breaker">
+
+		<form class="form-horizontal">
+			<div class="form-group">
+			    <label for="name" class="col-xs-4 col-sm-2 control-label">Name</label>
+			    <div class="col-xs-8 col-sm-8">
+			      <input placeholder="John" ng-model="user.name" class="form-control" id="name" name="name" type="name">
+			    </div>
+		  	</div>
+		  	<div class="form-group">
+			    <label for="surname" class="col-xs-4 col-sm-2 control-label">Surname</label>
+			    <div class="col-xs-8 col-sm-8">
+			      <input placeholder="Smith" ng-model="user.surname" class="form-control" id="surname" name="surname" type="surname">
+			    </div>
+		  	</div>
+		  	<div class="form-group">
+			    <label for="username" class="col-xs-4 col-sm-2 control-label">Username</label>
+			    <div class="col-xs-10 col-sm-8">
+			      <input placeholder="username" ng-model="user.username" class="form-control" id="username" name="username" type="username">
+			    </div>
+		  	</div>
+		  	<div class="form-group">
+			    <label for="username" class="col-xs-4 col-sm-2 control-label">Old password</label>
+			    <div class="col-xs-10 col-sm-8">
+			      <input placeholder="Your old password" ng-model="user.username" class="form-control" id="username" name="username" type="username">
+			    </div>
+		  	</div>
+		  	<div class="form-group">
+			    <label for="username" class="col-xs-4 col-sm-2 control-label">New password</label>
+			    <div class="col-xs-10 col-sm-8">
+			      <input placeholder="Your new password" ng-model="user.username" class="form-control" id="username" name="username" type="username">
+			    </div>
+		  	</div>
+		  	<div class="form-group">
+			    <label for="username" class="col-xs-4 col-sm-2 control-label">Repeat new password</label>
+			    <div class="col-xs-10 col-sm-8">
+			      <input placeholder="Your new password retype" ng-model="user.username" class="form-control" id="username" name="username" type="password">
+			    </div>
+		  	</div>
+		  	<div class="form-group">
+			    <label for="email" class="col-xs-4 col-sm-2 control-label">E-mail</label>
+			    <div class="col-xs-8 col-sm-8">
+			      <input placeholder="someone@somewhere.com" ng-model="user.email" class="form-control" id="email" name="email" type="email">
+			    </div>
+		  	</div>
+
+		  	<div class="col-sm-offset-2">
+		      <button name="settings_add" value="user" class="btn btn-primary custom_button" ng-click="addUser(user)">Update</button>
 		    </div>
 		</form>
 	</div>

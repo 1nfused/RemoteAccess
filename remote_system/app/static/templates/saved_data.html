@@ -1,20 +1,24 @@
 <div class="content" ng-controller="savedDataController">
-	<div class="saved_data_block col-xs-3" ng-repeat="(name, data) in saved_data_list">
-		<a href="" ng-click="showData(name, data)">
+	<div class="saved_data_block col-xs-4" ng-repeat="(name, data) in saved_data_list">
+		
 		<div class="saved_data_inner">
+			<a href="" ng-click="showData(name, data)">
 			<div class="saved_d_picture">
-				<img src="/static/templates/images/saved_data_icon.png" style="height: 63px; width: 100px;">
+				<img src="/static/templates/images/saved_data_icon.png">
 			</div>
+			</a>
 			<div class="saved_d_details">
-				<div class="save_name">
+				<div class="save_block">
 					{$ name $}	
 				</div>
-				<div class="save_date">
+				<div class="save_block">
 					{$ data.date $}
+				</div>
+				<div class="save_block">
+					<button class="btn btn-primary" ng-click="deleteData(data.date)">DELETE</button>
 				</div>
 			</div>
 		</div>
-		</a>
 	</div>
   	<modal visible="showModal">
   	</modal>

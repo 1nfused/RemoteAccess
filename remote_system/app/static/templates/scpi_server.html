@@ -27,7 +27,7 @@
 	<div>
 		<div class="scpi_script">
 		  <label for="username">Execute custom scpi script</label>
-		  <textarea rows="5" id="scpi_program">
+		  <textarea rows="5" id="scpi_program" ng-model="scpi_script">
 import sys
 # import redpitaya_scpi as scpi
 # The remote system takes care of all the imports
@@ -40,7 +40,7 @@ rp_s = scpi.scpi({$ connected ? rp.ip : None; $})
 		</div>
 		<br>
 		<div class="text_area_buttons">
-			<button class="btn btn-primary" ng-click="">EXECUTE SCRIPT</button>
+			<button class="btn btn-primary" ng-click="executeScpiScript(scpi_script)">EXECUTE SCRIPT</button>
 			<button class="btn btn-primary">SCPI COMMANDS</button>
 		</div>
 	</div>

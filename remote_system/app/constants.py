@@ -1,5 +1,5 @@
 ####################
-# CONSTANTS FOLDER #
+# CONSTANTS FILE   #
 ####################
 
 RP_HOSTNAME = 'Instrumentation Technologies d.d.'
@@ -10,5 +10,6 @@ RP_GLOBALY_AVALIABLE_APPS = [
 	'scope', 
 	'scope+gen', 
 	'impedance_analyzer',
-	'shunt_app']
+	'shunt_app',
+	'spectrum']
 REGISTER_DATA_FILE_NAME = 'register_data.txt'

@@ -10,6 +10,7 @@ import sys
 
 from flask import Flask, render_template, \
     request, url_for, redirect, session, flash, g, jsonify
+from flask.ext.cors import CORS, cross_origin
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey, DateTime
@@ -29,6 +30,8 @@ app = Flask(__name__, template_folder='static/templates')
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 # User class
@@ -41,6 +44,7 @@ class User(db.Model):
     email = db.Column(db.String, nullable=False)
     password = db.Column(db.String, default="root")
     role = db.Column(db.Boolean, default=False)
+    saved_data = db.relationship('SavedData', backref='rp', lazy='dynamic')
 
     def __init__(self, username, password, name, email, role=False):
         self.username = username
@@ -63,8 +67,28 @@ class RedPitaya(db.Model):
         self.mac = mac
 
 
+class SavedData(db.Model):
+    __tablename__ = "saved_data"
+
+    id = db.Column(db.Integer, primary_key=True)
+    # name = db.Column(db.String, nullable=True)
+    date = db.Column(db.Date, nullable=False)
+    saved_data = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('users.id'))
+
+    def __init__(self, saved_data, date, user_id):
+        # self.name = name
+        self.date = date
+        self.saved_data = saved_data
+        self.user_id = user_id
+
+
 @app.route('/', methods=['GET', 'POST'])
 def login_page():
+    user = User('root', 'root', 'Luka', 'luka.golinar@gmail.com', True)
+    db.session.add(user)
+    db.session.commit()
+
     error = None
     # Login authentication
     if request.method == 'POST':
@@ -72,8 +96,6 @@ def login_page():
         login_user = request.form.get('data.username', type=str)
         login_password = request.form.get('data.password', type=str)
 
-        print login_user
-        print login_password
         user = User.query.filter(
             User.username  == str(login_user)).first()
 
@@ -140,12 +162,13 @@ def index():
 
     return jsonify(response), 200
 
-'''
-@app.route('/logs', methods=['GET', 'POST'])
+''' FOR ANOTHER TIME MAYBE
+@app.route('/rp_log', methods=['GET', 'POST'])
 def logs():
-    return render_template('logs.html')
+    print session.
+    for file in constants.LOG_FILES:
+        file = open("/tmp/")
 '''
-
 
 @app.route('/settings', methods=['POST', 'GET'])
 def settings():
@@ -163,7 +186,6 @@ def settings():
     if add_type == 'user':
         username = post_request.get('data')['username']
         if User.query.filter(User.username == username).first():
-            print "USERNAME exists"
             response['msg'] = \
                 "User with username %s already exists" % username
             return jsonify(response), 504
@@ -217,10 +239,48 @@ def settings():
             'msg': "Successfully created Red Pitaya %s" % rp_name }
     return jsonify(response), 200
 
-@app.route('/gpio', methods=['GET'])
-def gpio():
-    # Read GPIO file from mounted RP
-    pass
+
+# This functions saves the data to a postgres base, if it exists
+@app.route('/saved_data', methods=['GET'])
+def save_data():
+    post_request = json.loads(request.data.decode())
+    return
+
+
+@app.route('/saved_data', methods=['POST', 'GET'])
+def get_saved_data():
+    
+    error = None
+    respose = { 'success': True }
+    post_request = json.loads(request.data.decode())
+    conn_rp_mac = post_request.get('connected_pitaya').get('mac')
+
+    rp = RedPitaya.query.filter(RedPitaya.mac == conn_rp_mac).first()
+
+    if not rp:
+        error = "Red Pitaya does not exist"
+    else:
+        saved_data = SavedData.query.filter(SavedData.rp.mac == rp.mac)
+        respose = {
+            'success': True,
+            'saved_data': saved_data
+        }
+
+    return jsonify(response), 200 
+
+
+@app.route('/delete_saved_data', methods=['POST', 'GET'])
+def delete_saved_data():
+    post_request = json.loads(request.data.decode())
+    data_date = post_request.get('delete_date')
+
+    response = { 'success': True }
+
+    saved_data = SavedData.query(SavedData.date == data_date).first()
+    db.session.delete(saved_data.id)
+    db.session.commit()
+
+    return jsonify(response), 200
 
 # Opens up the registers file and reads registers
 @app.route('/registers', methods=['POST', 'GET'])
@@ -368,23 +428,22 @@ def scpi_server():
         print session.get('rp')['ip']
     else:
         pass
-
-    scpi_command = post_request.get('scpi_command')
-    scpi_args = post_request.get('scpi_args')
-
-    if scpi_args:
-        scpi_args = scpi_args.split(' ')
     
     rp = session['rp']
     exec_type = post_request.get('type')
 
     if exec_type == 'single':
+        scpi_command = post_request.get('scpi_command')
+        scpi_args = post_request.get('scpi_args')
+
+        if scpi_args:
+            scpi_args = scpi_args.split(' ')
         rp_s.tx_txt(scpi_command + ' ' +  ''.join(scpi_args))
         print scpi_command + ''.join(scpi_args)
     elif exec_type == 'script':
-        pass
+        scpi_script = post_request.get('scpi_script')
+        print scpi_script
     
-    print "Here"
     response = { 'success': True }
     return jsonify(response), 200
 
